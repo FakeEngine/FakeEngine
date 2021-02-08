@@ -1,0 +1,15 @@
+# Binaries
+bin/
+!vendor/bin/premake/
+bin-int/
+builds/
+
+# Fake files
+*.log
+
+# Visual Studio files and folder
+.vs/
+**.sln
+**.vcxproj
+**.vcxproj.filters
+**.vcxproj.user
