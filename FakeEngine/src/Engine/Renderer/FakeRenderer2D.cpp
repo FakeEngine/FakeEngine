@@ -71,10 +71,7 @@ void FakeRenderer2D::EndScene()
 
 void FakeRenderer2D::DrawQuad(const FakeVec3f &position, const FakeVec2f &size, float rotation, const FakeVec4f &color)
 	{
-	FakeMat4f transformMatrix = FakeMat4f::Translate(position);
-	FakeMat4f rotationMatrix = FakeMat4f::Rotate(fake_radians(rotation), { 0, 0, 1 });
-	FakeMat4f scaleMatrix = FakeMat4f::Scale({ size.X, size.Y, 1.0f });
-	FakeMat4f transform = FakeMat4f::Multiply(transformMatrix, FakeMat4f::Multiply(rotationMatrix, scaleMatrix));
+	FakeMat4f transform = FakeMat4f::Translate(position) * FakeMat4f::Rotate(fake_radians(rotation), { 0, 0, 1 }) * FakeMat4f::Scale({ size.X, size.Y, 1.0f });
 
 	Data->WhiteTexture->Bind();
 	Data->QuadPipeline->GetSpecification().Shader->Bind();
@@ -90,10 +87,7 @@ void FakeRenderer2D::DrawQuad(const FakeVec3f &position, const FakeVec2f &size, 
 
 void FakeRenderer2D::DrawTexture(const FakeVec3f &position, const FakeVec2f &size, float rotation, const FakeRef<FakeTexture2D> &texture, float tilingFactor, const FakeVec4f &tintColor)
 	{
-	FakeMat4f transformMatrix = FakeMat4f::Translate(position);
-	FakeMat4f rotationMatrix = FakeMat4f::Rotate(fake_radians(rotation), { 0, 0, 1 });
-	FakeMat4f scaleMatrix = FakeMat4f::Scale({ size.X, size.Y, 1.0f });
-	FakeMat4f transform = FakeMat4f::Multiply(transformMatrix, FakeMat4f::Multiply(rotationMatrix, scaleMatrix));
+	FakeMat4f transform = FakeMat4f::Translate(position) * FakeMat4f::Rotate(fake_radians(rotation), { 0, 0, 1 }) * FakeMat4f::Scale({ size.X, size.Y, 1.0f });
 
 	texture->Bind();
 	Data->QuadPipeline->GetSpecification().Shader->Bind();

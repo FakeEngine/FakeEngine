@@ -2061,7 +2061,283 @@ struct FAKE_API FakeMatrix4x4
 		return result;
 		}
 
-	// TODO: Transformations and operator overloadings
+	// TODO: Transformations
+
+	FakeMatrix4x4 operator+(const FakeMatrix4x4 &other) const
+		{
+		FakeMatrix4x4 result;
+		Add(*this, other, result);
+		return result;
+		}
+
+	FakeMatrix4x4 operator-(const FakeMatrix4x4 &other) const
+		{
+		FakeMatrix4x4 result;
+		Subtract(*this, other, result);
+		return result;
+		}
+
+	FakeMatrix4x4 operator*(const FakeMatrix4x4 &other) const
+		{
+		FakeMatrix4x4 result;
+		Multiply(*this, other, result);
+		return result;
+		}
+
+	FakeMatrix4x4 operator*(T scalar) const
+		{
+		FakeMatrix4x4 result;
+		Multiply(*this, scalar, result);
+		return result;
+		}
+
+	FakeMatrix4x4 operator/(const FakeMatrix4x4 &other) const
+		{
+		FakeMatrix4x4 result;
+		Divide(*this, other, result);
+		return result;
+		}
+
+	FakeMatrix4x4 operator/(T scalar) const
+		{
+		FakeMatrix4x4 result;
+		Divide(*this, scalar, result);
+		return result;
+		}
+
+	FakeMatrix4x4 &operator+=(const FakeMatrix4x4 &other)
+		{
+		M11 += other.M11;
+		M12 += other.M12;
+		M13 += other.M13;
+		M14 += other.M14;
+
+		M21 += other.M21;
+		M22 += other.M22;
+		M23 += other.M23;
+		M24 += other.M24;
+		
+		M31 += other.M31;
+		M32 += other.M32;
+		M33 += other.M33;
+		M34 += other.M34;
+		
+		M41 += other.M41;
+		M42 += other.M42;
+		M43 += other.M43;
+		M44 += other.M44;
+		return *this;
+		}
+
+	FakeMatrix4x4 &operator-=(const FakeMatrix4x4 &other)
+		{
+		M11 -= other.M11;
+		M12 -= other.M12;
+		M13 -= other.M13;
+		M14 -= other.M14;
+
+		M21 -= other.M21;
+		M22 -= other.M22;
+		M23 -= other.M23;
+		M24 -= other.M24;
+		
+		M31 -= other.M31;
+		M32 -= other.M32;
+		M33 -= other.M33;
+		M34 -= other.M34;
+		
+		M41 -= other.M41;
+		M42 -= other.M42;
+		M43 -= other.M43;
+		M44 -= other.M44;
+
+		return *this;
+		}
+
+	FakeMatrix4x4 &operator*=(const FakeMatrix4x4 &other)
+		{
+		M11 = M11 * other.M11 + M12 * other.M21 + M13 * other.M31 + M14 * other.M41;
+		M12 = M11 * other.M12 + M12 * other.M22 + M13 * other.M32 + M14 * other.M42;
+		M13 = M11 * other.M13 + M12 * other.M23 + M13 * other.M33 + M14 * other.M43;
+		M14 = M11 * other.M14 + M12 * other.M24 + M13 * other.M34 + M14 * other.M44;
+		
+		M21 = M21 * other.M11 + M22 * other.M21 + M23 * other.M31 + M24 * other.M41;
+		M22 = M21 * other.M12 + M22 * other.M22 + M23 * other.M32 + M24 * other.M42;
+		M23 = M21 * other.M13 + M22 * other.M23 + M23 * other.M33 + M24 * other.M43;
+		M24 = M21 * other.M14 + M22 * other.M24 + M23 * other.M34 + M24 * other.M44;
+		
+		M31 = M31 * other.M11 + M32 * other.M21 + M33 * other.M31 + M34 * other.M41;
+		M32 = M31 * other.M12 + M32 * other.M22 + M33 * other.M32 + M34 * other.M42;
+		M33 = M31 * other.M13 + M32 * other.M23 + M33 * other.M33 + M34 * other.M43;
+		M34 = M31 * other.M14 + M32 * other.M24 + M33 * other.M34 + M34 * other.M44;
+		
+		M41 = M41 * other.M11 + M42 * other.M21 + M43 * other.M31 + M44 * other.M41;
+		M42 = M41 * other.M12 + M42 * other.M22 + M43 * other.M32 + M44 * other.M42;
+		M43 = M41 * other.M13 + M42 * other.M23 + M43 * other.M33 + M44 * other.M43;
+		M44 = M41 * other.M14 + M42 * other.M24 + M43 * other.M34 + M44 * other.M44;
+
+		return *this;
+		}
+
+	FakeMatrix4x4 &operator*=(T scalar)
+		{
+		M11 *= scalar;
+		M12 *= scalar;
+		M13 *= scalar;
+		M14 *= scalar;
+
+		M21 *= scalar;
+		M22 *= scalar;
+		M23 *= scalar;
+		M24 *= scalar;
+		
+		M31 *= scalar;
+		M32 *= scalar;
+		M33 *= scalar;
+		M34 *= scalar;
+		
+		M41 *= scalar;
+		M42 *= scalar;
+		M43 *= scalar;
+		M44 *= scalar;
+
+		return *this;
+		}
+
+	FakeMatrix4x4 &operator/=(const FakeMatrix4x4 &other)
+		{
+		// TODO: check if any is zero in right
+
+		M11 /= other.M11;
+		M12 /= other.M12;
+		M13 /= other.M13;
+		M14 /= other.M14;
+
+		M21 /= other.M21;
+		M22 /= other.M22;
+		M23 /= other.M23;
+		M24 /= other.M24;
+		
+		M31 /= other.M31;
+		M32 /= other.M32;
+		M33 /= other.M33;
+		M34 /= other.M34;
+		
+		M41 /= other.M41;
+		M42 /= other.M42;
+		M43 /= other.M43;
+		M44 /= other.M44;
+
+		return *this;
+		}
+
+	FakeMatrix4x4 &operator/=(T scalar)
+		{
+		FAKE_ASSERT(!fake_is_zero(scalar));
+		const T inv = static_cast<T>(1) / scalar;
+
+		M11 *= inv;
+		M12 *= inv;
+		M13 *= inv;
+		M14 *= inv;
+
+		M21 *= inv;
+		M22 *= inv;
+		M23 *= inv;
+		M24 *= inv;
+		
+		M31 *= inv;
+		M32 *= inv;
+		M33 *= inv;
+		M34 *= inv;
+		
+		M41 *= inv;
+		M42 *= inv;
+		M43 *= inv;
+		M44 *= inv;
+
+		return *this;
+		}
+
+	bool operator==(const FakeMatrix4x4 &other) const
+		{
+		uint32 equalCount = 0;
+		for (uint32 i = 0; i < 16; ++i)
+			{
+			if (Raw[i] == other.Raw[i])
+				++equalCount;
+			}
+
+		if (16 == equalCount)
+			return true;
+		else
+			return false;
+		}
+
+	bool operator!=(const FakeMatrix4x4 &other) const
+		{
+		return !(*this == other);
+		}
+
+	bool operator<(const FakeMatrix4x4 &other) const
+		{
+		uint32 lessCount = 0;
+		for (uint32 i = 0; i < 16; ++i)
+			{
+			if (Raw[i] < other.Raw[i])
+				++lessCount;
+			}
+
+		if (16 == lessCount)
+			return true;
+		else
+			return false;
+		}
+
+	bool operator<=(const FakeMatrix4x4 &other) const
+		{
+		uint32 lessCount = 0;
+		for (uint32 i = 0; i < 16; ++i)
+			{
+			if (Raw[i] <= other.Raw[i])
+				++lessCount;
+			}
+
+		if (16 == lessCount)
+			return true;
+		else
+			return false;
+		}
+
+	bool operator>(const FakeMatrix4x4 &other) const
+		{
+		uint32 greaterCount = 0;
+		for (uint32 i = 0; i < 16; ++i)
+			{
+			if (Raw[i] > other.Raw[i])
+				++greaterCount;
+			}
+
+		if (16 == greaterCount)
+			return true;
+		else
+			return false;
+		}
+
+	bool operator>=(const FakeMatrix4x4 &other) const
+		{
+		uint32 greaterCount = 0;
+		for (uint32 i = 0; i < 16; ++i)
+			{
+			if (Raw[i] >= other.Raw[i])
+				++greaterCount;
+			}
+
+		if (16 == greaterCount)
+			return true;
+		else
+			return false;
+		}
 
 	/**
 	 *
@@ -2070,7 +2346,15 @@ struct FAKE_API FakeMatrix4x4
 	 * @param The Matrix to copy.
 	 * @return Returns the copied instance.
 	 */
-	FakeMatrix4x4 &operator=(const FakeMatrix4x4&) = default;
+	FakeMatrix4x4 &operator=(const FakeMatrix4x4 &other)
+		{
+		for (uint32 i = 0; i < 16; ++i)
+			{
+			Raw[i] = other.Raw[i];
+			}
+
+		return *this;
+		}
 
 	/**
 	 *
