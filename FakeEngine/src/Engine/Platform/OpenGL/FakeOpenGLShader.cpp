@@ -496,7 +496,7 @@ std::unordered_map<GLenum, std::string> FakeOpenGLShader::PreProcess(const FakeS
 	uint32 pos = source.Find(typeToken); // Start of shader type declaration line
 	while (pos != FakeString::NPOS)
 		{
-		uint32 eol = source.Find("\r\n", pos); // End of shader type declaration line
+		uint32 eol = source.Find("\n", pos); // End of shader type declaration line
 		FAKE_ASSERT(eol != FakeString::NPOS, "Syntax Error!");
 
 		uint32 begin = pos + typeToken.Length() + 1; // Start of shader type name (after "#type " keyword)
@@ -504,7 +504,7 @@ std::unordered_map<GLenum, std::string> FakeOpenGLShader::PreProcess(const FakeS
 		GLenum glType = Utils::fake_shader_type_from_string(type);
 		FAKE_ASSERT(glType, "Invalid Shader type specified!");
 
-		uint32 nextLinePos = source.FirstIndexNotOf("\r\n", eol); // Start of shader code after shader type declaration line
+		uint32 nextLinePos = source.FirstIndexNotOf("\n", eol); // Start of shader code after shader type declaration line
 		FAKE_ASSERT(nextLinePos != FakeString::NPOS, "Syntax Error!");
 		pos = source.Find(typeToken, nextLinePos); // Start of next shader type declaration line
 
