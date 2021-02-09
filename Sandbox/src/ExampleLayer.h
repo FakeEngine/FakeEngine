@@ -33,6 +33,10 @@ class ExampleLayer : public FakeLayer
 
 		virtual void OnAttach() override
 			{
+			FakeMat2f mat(1, -1, 3, 4);
+			mat.Inverse();
+			std::cout << mat << std::endl;
+
 			LogoTex = FakeTexture2D::Create("assets/textures/Logo.png");
 			}
 
