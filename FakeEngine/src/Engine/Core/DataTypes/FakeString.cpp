@@ -1233,7 +1233,6 @@ bool FakeString::operator>(const char *other) const
 	return Size > strlen(other);
 	}
 
-
 bool FakeString::operator>(const FakeString &other)
 	{
 	return Size > other.Size;

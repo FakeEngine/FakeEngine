@@ -158,10 +158,10 @@ struct FAKE_API FakeMatrix2x2
 	 */
 	FakeString ToString() const
 		{
-		std::stringstream ss << "Matrix2(";
-		ss << M11 << ", " << M12 << "," << std::endl;
-		ss << M21 << ", " << M22 << ")" << std::endl;
-		return ss.str();
+		FakeString result;
+		result << M11 << ", " << M12 << ",\n";
+		result << M21 << ", " << M22 << "\n";
+		return result;
 		}
 
 
@@ -234,9 +234,8 @@ struct FAKE_API FakeMatrix2x2
 	 */
 	friend std::ostream &operator<<(std::ostream &stream, const FakeMatrix2x2 &matrix)
 		{
-		stream << "Matrix2(";
 		stream << matrix.M11 << ", " << matrix.M12 << "," << std::endl;
-		stream << matrix.M21 << ", " << matrix.M22 << ")" << std::endl;
+		stream << matrix.M21 << ", " << matrix.M22 << std::endl;
 		return stream;
 		}
 	};

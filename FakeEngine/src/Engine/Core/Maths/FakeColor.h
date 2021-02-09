@@ -1,9 +1,9 @@
 /*****************************************************************
- * \file   FakeMaths.h
+ * \file   FakeColor.h
  * \brief  
  * 
  * \author Can Karka
- * \date   January 2021
+ * \date   February 2021
  * 
  * Copyright (C) 2021 Can Karka
  *
@@ -21,21 +21,4 @@
  *********************************************************************/
 
 #pragma once
-
-#include "FakeMathFunctions.h"
-
-#include "FakeVector2.h"
-#include "FakeVector3.h"
-#include "FakeVector4.h"
-
-#include "FakeMatrix2x2.h"
-#include "FakeMatrix3x3.h"
-#include "FakeMatrix4x4.h"
-#include "FakeTransform.h"
-
-#include "FakeQuaternion.h"
-
-#include "FakeAABB.h"
-#include "FakeRay.h"
-#include "FakeColor.h"
 

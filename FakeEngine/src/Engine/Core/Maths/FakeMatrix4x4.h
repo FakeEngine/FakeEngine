@@ -26,6 +26,8 @@
 #include "Engine/Core/Maths/FakeVector2.h"
 #include "Engine/Core/Maths/FakeVector3.h"
 #include "Engine/Core/Maths/FakeVector4.h"
+#include "Engine/Core/Maths/FakeMatrix2x2.h"
+#include "Engine/Core/Maths/FakeMatrix3x3.h"
 
 template<typename T>
 struct FakeQuaternion;
@@ -246,9 +248,9 @@ struct FAKE_API FakeMatrix4x4
 
 	/**
 	 * 
-	 * .
+	 * constructor.
 	 * 
-	 * @param values
+	 * @param values stack based array.
 	 */
 	FakeMatrix4x4(T values[16])
 		{
@@ -257,13 +259,71 @@ struct FAKE_API FakeMatrix4x4
 
 	/**
 	 * 
-	 * .
+	 * constructor.
 	 * 
-	 * @param values
+	 * @param values 2 dimensional array.
 	 */
 	FakeMatrix4x4(T values[4][4])
 		{
 		memcpy(Raw, values, 16 * sizeof(T));
+		}
+
+	/**
+	 * 
+	 * constructor.
+	 * 
+	 * @param other 2x2 Matrix.
+	 */
+	FakeMatrix4x4(const FakeMatrix2x2<T> &other)
+		{
+		M11 = other.M11;
+		M12 = other.M12;
+		M13 = static_cast<T>(0);
+		M14 = static_cast<T>(0);
+
+		M21 = other.M21;
+		M22 = other.M22;
+		M23 = static_cast<T>(0);
+		M24 = static_cast<T>(0);
+
+		M31 = static_cast<T>(0);
+		M32 = static_cast<T>(0);
+		M33 = static_cast<T>(0);
+		M34 = static_cast<T>(0);
+
+		M41 = static_cast<T>(0);
+		M42 = static_cast<T>(0);
+		M43 = static_cast<T>(0);
+		M44 = static_cast<T>(0);
+		}
+
+	/**
+	 * 
+	 * constructor.
+	 * 
+	 * @param other 3x3 Matrix.
+	 */
+	FakeMatrix4x4(const FakeMatrix3x3<T> &other)
+		{
+		M11 = other.M11;
+		M12 = other.M12;
+		M13 = other.M13;
+		M14 = static_cast<T>(0);
+
+		M21 = other.M21;
+		M22 = other.M22;
+		M23 = other.M23;
+		M24 = static_cast<T>(0);
+
+		M31 = other.M31;
+		M32 = other.M32;
+		M33 = other.M33;
+		M34 = static_cast<T>(0);
+
+		M41 = static_cast<T>(0);
+		M42 = static_cast<T>(0);
+		M43 = static_cast<T>(0);
+		M44 = static_cast<T>(0);
 		}
 
 	/**
@@ -283,10 +343,10 @@ struct FAKE_API FakeMatrix4x4
 	FakeString ToString() const
 		{
 		FakeString result;
-		result += FakeString::ToString(M11) + ", " + FakeString::ToString(M12) + ", " + FakeString::ToString(M13) + ", " + FakeString::ToString(M14) + ",\n";
-		result += FakeString::ToString(M21) + ", " + FakeString::ToString(M22) + ", " + FakeString::ToString(M23) + ", " + FakeString::ToString(M24) + ",\n";
-		result += FakeString::ToString(M31) + ", " + FakeString::ToString(M32) + ", " + FakeString::ToString(M33) + ", " + FakeString::ToString(M34) + ",\n";
-		result += FakeString::ToString(M41) + ", " + FakeString::ToString(M42) + ", " + FakeString::ToString(M43) + ", " + FakeString::ToString(M44);
+		result << M11 << ", " << M12 << ", " << M13 << ", " << M14 << ",\n";
+		result << M21 << ", " << M22 << ", " << M23 << ", " << M24 << ",\n";
+		result << M31 << ", " << M32 << ", " << M33 << ", " << M34 << ",\n";
+		result << M41 << ", " << M42 << ", " << M43 << ", " << M44 << "\n";
 		return result;
 		}
 
@@ -2061,8 +2121,342 @@ struct FAKE_API FakeMatrix4x4
 		return result;
 		}
 
-	// TODO: Transformations
+	/**
+	 * 
+	 * Creates a matrix that contains both the X, Y and Z rotation, as well as scaling and translation.
+	 * 
+	 * @param translation The translation.
+	 * @param rotation The angle of rotation in radians. Angles are measured clockwise when looking along the rotation axis toward the origin.
+	 * @param scaling The scaling.
+	 * @param result The result containing the transformation matrix.
+	 */
+	static void Transform(const FakeVector3<T> &translation, const FakeQuaternion<T> &rotation, const FakeVector3<T> &scaling, FakeMatrix4x4 &result)
+		{
+		// Equivalent to:
+		//result =
+		//    Matrix.Scale(scaling)
+		//  * Matrix.RotateX(rotation.X)
+		//  * Matrix.RotateY(rotation.Y)
+		//  * Matrix.RotateZ(rotation.Z)
+		//  * Matrix.Translate(translation);
 
+		// Rotation
+		const T xx = rotation.X * rotation.X;
+		const T yy = rotation.Y * rotation.Y;
+		const T zz = rotation.Z * rotation.Z;
+		const T xy = rotation.X * rotation.Y;
+		const T zw = rotation.Z * rotation.W;
+		const T zx = rotation.Z * rotation.X;
+		const T yw = rotation.Y * rotation.W;
+		const T yz = rotation.Y * rotation.Z;
+		const T xw = rotation.X * rotation.W;
+
+		result.M11 = static_cast<T>(1) - static_cast<T>(2) * (yy + zz);
+		result.M12 = static_cast<T>(2) * (xy + zw);
+		result.M13 = static_cast<T>(2) * (zx - yw);
+		result.M21 = static_cast<T>(2) * (xy - zw);
+		result.M22 = static_cast<T>(1) - static_cast<T>(2) * (zz + xx);
+		result.M23 = static_cast<T>(2) * (yz + xw);
+		result.M31 = static_cast<T>(2) * (zx + yw);
+		result.M32 = static_cast<T>(2) * (yz - xw);
+		result.M33 = static_cast<T>(1) - static_cast<T>(2) * (yy + xx);
+
+		// Position
+		result.M41 = translation.X;
+		result.M42 = translation.Y;
+		result.M43 = translation.Z;
+
+		// Scale
+		result.M11 *= scaling.X;
+		result.M12 *= scaling.X;
+		result.M13 *= scaling.X;
+		result.M21 *= scaling.Y;
+		result.M22 *= scaling.Y;
+		result.M23 *= scaling.Y;
+		result.M31 *= scaling.Z;
+		result.M32 *= scaling.Z;
+		result.M33 *= scaling.Z;
+
+		result.M14 = static_cast<T>(0);
+		result.M24 = static_cast<T>(0);
+		result.M34 = static_cast<T>(0);
+		result.M44 = static_cast<T>(1);
+		}
+
+	/**
+	 * 
+	 * Creates a transformation matrix.
+	 * 
+	 * @param translation The translation factor of the transformation.
+	 * @param rotation The rotation of the transformation.
+	 * @param rotationCenter The center of the rotation.
+	 * @param scaling The scaling factor.
+	 * @param scalingCenter The center point of the scaling operation.
+	 * @param scalingRotation The scaling rotation amount.
+	 * @param result The result containing the transformation matrix.
+	 */
+	static void Transform(const FakeVector3<T> &translation, const FakeQuaternion<T> &rotation, const FakeVector3<T> &rotationCenter, const FakeVector3<T> &scaling, const FakeVector3<T> &scalingCenter, const FakeQuaternion<T> &scalingRotation, FakeMatrix4x4 &result)
+		{
+		FakeMatrix4x4 sr;
+		Rotate(scalingRotation, sr);
+		result = Translate(-scalingCenter) * Transpose(sr) * Scale(scaling) * sr * Translate(scalingCenter) * Translate(-rotationCenter) * Rotate(rotation) * Translate(rotationCenter) * Translate(translation);
+		}
+
+	/**
+	 * 
+	 * Creates a 3D affine transformation matrix.
+	 * 
+	 * @param translation The translation factor of the transformation.
+	 * @param rotation The rotation of the transformation.
+	 * @param scaling The scaling factor.
+	 * @param result The result containing the affine transformation matrix.
+	 */
+	static void AffineTransform(const FakeVector3<T> &translation, const FakeQuaternion<T> &rotation, T scaling, FakeMatrix4x4 &result)
+		{
+		result = Scale(scaling) * Rotate(rotation) * Translate(translation);
+		}
+
+	/**
+	 * 
+	 * Creates a 3D affine transformation matrix.
+	 * 
+	 * @param translation The translation factor of the transformation.
+	 * @param rotation The rotation of the transformation.
+	 * @param rotationCenter The center of the rotation.
+	 * @param scaling The scaling factor.
+	 * @param result The result containing the affine transformation matrix.
+	 */
+	static void AffineTransform(const FakeVector3<T> &translation, const FakeQuaternion<T> &rotation, const FakeVector3<T> &rotationCenter, T scaling, FakeMatrix4x4 &result)
+		{
+		result = Scale(scaling) * Translate(-rotationCenter) * Rotate(rotation) * Translate(rotationCenter) * Translate(translation);
+		}
+
+	/**
+	 * 
+	 * Creates a 2D affine transformation matrix.
+	 * 
+	 * @param translation The translation factor of the transformation.
+	 * @param rotation The rotation of the transformation.
+	 * @param scaling The scaling factor.
+	 * @param result The result containing the affine 2D transformation matrix.
+	 */
+	static void AffineTransform2D(const FakeVector2<T> &translation, T rotation, T scaling, FakeMatrix4x4 &result)
+		{
+		result = Scale({ scaling, scaling, static_cast<T>(1) }) * RotateZ(rotation) * Translate({ translation.X, translation.Y, static_cast<T>(0) });
+		}
+
+	/**
+	 * 
+	 * Creates a 2D affine transformation matrix.
+	 * 
+	 * @param translation The translation factor of the transformation.
+	 * @param rotation The rotation of the transformation.
+	 * @param rotationCenter The center of the rotation.
+	 * @param scaling The scaling factor.
+	 * @param result The result containing the affine 2D transformation matrix.
+	 */
+	static void AffineTransform2D(const FakeVector2<T> &translation, T rotation, const FakeVector2<T> &rotationCenter, T scaling, FakeMatrix4x4 &result)
+		{
+		result = Scale({ scaling, scaling, static_cast<T>(1) }) * Translate({ -rotationCenter.X, -rotationCenter.Y, static_cast<T>(0) }) * RotateZ(rotation) * Translate({ rotationCenter.X, rotationCenter.Y, static_cast<T>(0) }) * Translate({ translation.X, translation.Y, static_cast<T>(0) });
+		}
+
+	/**
+	 * 
+	 * Creates a 2D transformation matrix.
+	 * 
+	 * @param translation The translation factor of the transformation.
+	 * @param rotation The rotation of the transformation.
+	 * @param rotationCenter The center of the rotation.
+	 * @param scaling The scaling factor.
+	 * @param scalingCenter The center point of the scaling operation.
+	 * @param scalingRotation The scaling rotation amount.
+	 * @param result The result containing the 2D transformation matrix.
+	 */
+	static void Transform2D(const FakeVector2<T> &translation, T rotation, const FakeVector2<T> &rotationCenter, const FakeVector2<T> &scaling, FakeVector2<T> &scalingCenter, T scalingRotation, FakeMatrix4x4 &result)
+		{
+		result = Translate({ -scalingCenter.X, -scalingCenter.Y, static_cast<T>(0) }) * RotateZ(-scalingRotation) * Scale({ scaling.X, scaling.Y, static_cast<T>(0) }) * RotateZ(scalingRotation) * Translate({ scalingCenter.X, scalingCenter.Y, static_cast<T>(0) }) * Translate({ -rotationCenter.X, -rotationCenter.Y, static_cast<T>(0) }) * RotateZ(rotation) * Translate({ rotationCenter.X, rotationCenter.Y, static_cast<T>(0) }) * Translate({ translation.X, translation.Y, static_cast<T>(0) });
+		result.M33 = static_cast<T>(1);
+		result.M44 = static_cast<T>(1);
+		}
+
+	/**
+	 * 
+	 * Creates a world matrix with the specified parameters.
+	 * 
+	 * @param position The position of the object. This value is used in translation operations.
+	 * @param forward The forward direction of the object.
+	 * @param up The upward direction of the object - normally (0, 1, 0).
+	 * @param result Returns created world matrix.
+	 */
+	static void CreateWorldMatrix(const FakeVector3<T> &position, const FakeVector3<T> &forward, const FakeVector3<T> &up, FakeMatrix4x4 &result)
+		{
+		FakeVector3<T> vector3, vector31, vector32;
+
+		FakeVector3<T>::Normalize(forward, vector3);
+		vector3.Negate();
+		FakeVector3<T>::Normalize(FakeVector3<T>::Cross(up, vector3), vector31);
+		FakeVector3<T>::Cross(vector3, vector31, vector32);
+
+		result.M11 = vector31.X;
+		result.M12 = vector31.Y;
+		result.M13 = vector31.Z;
+		result.M14 = static_cast<T>(0);
+
+		result.M21 = vector32.X;
+		result.M22 = vector32.Y;
+		result.M23 = vector32.Z;
+		result.M24 = static_cast<T>(0);
+
+		result.M31 = vector3.X;
+		result.M32 = vector3.Y;
+		result.M33 = vector3.Z;
+		result.M34 = static_cast<T>(0);
+
+		result.M41 = position.X;
+		result.M42 = position.Y;
+		result.M43 = position.Z;
+		result.M44 = static_cast<T>(1);
+		}
+
+	/**
+	 * 
+	 * Creates a new Matrix that rotates around an arbitrary vector.
+	 * 
+	 * @param position The position of the object. This value is used in translation operations.
+	 * @param forward The forward direction of the object.
+	 * @param up The upward direction of the object - normally (0, 1, 0).
+	 * @return Returns created world matrix.
+	 */
+	static FakeMatrix4x4 CreateWorldMatrix(const FakeVector3<T> &position, const FakeVector3<T> &forward, const FakeVector3<T> &up)
+		{
+		FakeMatrix4x4 result;
+		FakeVector3<T> vector3, vector31, vector32;
+
+		FakeVector3<T>::Normalize(forward, vector3);
+		vector3.Negate();
+		FakeVector3<T>::Normalize(FakeVector3<T>::Cross(up, vector3), vector31);
+		FakeVector3<T>::Cross(vector3, vector31, vector32);
+
+		result.M11 = vector31.X;
+		result.M12 = vector31.Y;
+		result.M13 = vector31.Z;
+		result.M14 = static_cast<T>(0);
+
+		result.M21 = vector32.X;
+		result.M22 = vector32.Y;
+		result.M23 = vector32.Z;
+		result.M24 = static_cast<T>(0);
+
+		result.M31 = vector3.X;
+		result.M32 = vector3.Y;
+		result.M33 = vector3.Z;
+		result.M34 = static_cast<T>(0);
+
+		result.M41 = position.X;
+		result.M42 = position.Y;
+		result.M43 = position.Z;
+		result.M44 = static_cast<T>(1);
+
+		return result;
+		}
+
+	/**
+	 * 
+	 * Creates a new Matrix that rotates around an arbitrary vector.
+	 * 
+	 * @param axis The axis to rotate around.
+	 * @param angle The angle to rotate around the vector.
+	 * @param result The result containing the matrix that rotates around an arbitrary vector.
+	 */
+	static void CreateFromAxis(const FakeVector3<T> &axis, T angle, FakeMatrix4x4 &result)
+		{
+		const T x = axis.X;
+		const T y = axis.Y;
+		const T z = axis.Z;
+		const T single = fake_sin(angle);
+		const T single1 = fake_cos(angle);
+		const T single2 = x * x;
+		const T single3 = y * y;
+		const T single4 = z * z;
+		const T single5 = x * y;
+		const T single6 = x * z;
+		const T single7 = y * z;
+
+		result.M11 = single2 + single1 * (static_cast<T>(1) - single2);
+		result.M12 = single5 - single1 * single5 + single * z;
+		result.M13 = single6 - single1 * single6 - single * y;
+		result.M14 = static_cast<T>(0);
+
+		result.M21 = single5 - single1 * single5 - single * z;
+		result.M22 = single3 + single1 * (static_cast<T>(1) - single3);
+		result.M23 = single7 - single1 * single7 + single * x;
+		result.M24 = static_cast<T>(0);
+
+		result.M31 = single6 - single1 * single6 + single * y;
+		result.M32 = single7 - single1 * single7 - single * x;
+		result.M33 = single4 + single1 * (static_cast<T>(1) - single4);
+		result.M34 = static_cast<T>(0);
+
+		result.M41 = static_cast<T>(0);
+		result.M42 = static_cast<T>(0);
+		result.M43 = static_cast<T>(0);
+		result.M44 = static_cast<T>(1);
+		}
+
+	/**
+	 * 
+	 * Creates a new Matrix that rotates around an arbitrary vector.
+	 * 
+	 * @param axis The axis to rotate around.
+	 * @param angle The angle to rotate around the vector.
+	 * @return Returns a matrix that rotates around an arbitrary vector.
+	 */
+	static FakeMatrix4x4 CreateFromAxis(const FakeVector3<T> &axis, T angle)
+		{
+		FakeMatrix4x4 result;
+
+		const T x = axis.X;
+		const T y = axis.Y;
+		const T z = axis.Z;
+		const T single = fake_sin(angle);
+		const T single1 = fake_cos(angle);
+		const T single2 = x * x;
+		const T single3 = y * y;
+		const T single4 = z * z;
+		const T single5 = x * y;
+		const T single6 = x * z;
+		const T single7 = y * z;
+
+		result.M11 = single2 + single1 * (static_cast<T>(1) - single2);
+		result.M12 = single5 - single1 * single5 + single * z;
+		result.M13 = single6 - single1 * single6 - single * y;
+		result.M14 = static_cast<T>(0);
+
+		result.M21 = single5 - single1 * single5 - single * z;
+		result.M22 = single3 + single1 * (static_cast<T>(1) - single3);
+		result.M23 = single7 - single1 * single7 + single * x;
+		result.M24 = static_cast<T>(0);
+
+		result.M31 = single6 - single1 * single6 + single * y;
+		result.M32 = single7 - single1 * single7 - single * x;
+		result.M33 = single4 + single1 * (static_cast<T>(1) - single4);
+		result.M34 = static_cast<T>(0);
+
+		result.M41 = static_cast<T>(0);
+		result.M42 = static_cast<T>(0);
+		result.M43 = static_cast<T>(0);
+		result.M44 = static_cast<T>(1);
+
+		return result;
+		}
+
+	/**
+	 * 
+	 * Overloaded + operator.
+	 * 
+	 * @param other The Matrix to add.
+	 * @return Returns the current matrix instance containing the sum of the addition.
+	 */
 	FakeMatrix4x4 operator+(const FakeMatrix4x4 &other) const
 		{
 		FakeMatrix4x4 result;
@@ -2070,6 +2464,13 @@ struct FAKE_API FakeMatrix4x4
 		return result;
 		}
 
+	/**
+	 * 
+	 * Overloaded - operator.
+	 * 
+	 * @param other The matrix to subtract.
+	 * @return Returns the current matrix instance containing the difference of the subtraction.
+	 */
 	FakeMatrix4x4 operator-(const FakeMatrix4x4 &other) const
 		{
 		FakeMatrix4x4 result;
@@ -2077,6 +2478,13 @@ struct FAKE_API FakeMatrix4x4
 		return result;
 		}
 
+	/**
+	 * 
+	 * Overloaded * operator.
+	 * 
+	 * @param other The Matrix to multiply.
+	 * @return Returns the current matrix instance containing the multiplication.
+	 */
 	FakeMatrix4x4 operator*(const FakeMatrix4x4 &other) const
 		{
 		FakeMatrix4x4 result;
@@ -2084,6 +2492,13 @@ struct FAKE_API FakeMatrix4x4
 		return result;
 		}
 
+	/**
+	 * 
+	 * Overloaded * operator.
+	 * 
+	 * @param scalar The scalar to multiply.
+	 * @return Returns the current matrix instance containing the multiplication.
+	 */
 	FakeMatrix4x4 operator*(T scalar) const
 		{
 		FakeMatrix4x4 result;
@@ -2091,6 +2506,13 @@ struct FAKE_API FakeMatrix4x4
 		return result;
 		}
 
+	/**
+	 * 
+	 * Overloaded / operator.
+	 * 
+	 * @param other The matrix to divide.
+	 * @return Returns the current matrix instance containing the division.
+	 */
 	FakeMatrix4x4 operator/(const FakeMatrix4x4 &other) const
 		{
 		FakeMatrix4x4 result;
@@ -2098,6 +2520,13 @@ struct FAKE_API FakeMatrix4x4
 		return result;
 		}
 
+	/**
+	 * 
+	 * Overloaded / operator.
+	 * 
+	 * @param scalar The scalar to divide.
+	 * @return Returns the current matrix instance containing the division.
+	 */
 	FakeMatrix4x4 operator/(T scalar) const
 		{
 		FakeMatrix4x4 result;
@@ -2105,6 +2534,13 @@ struct FAKE_API FakeMatrix4x4
 		return result;
 		}
 
+	/**
+	 * 
+	 * Overloaded += operator.
+	 * 
+	 * @param other The matrix to add.
+	 * @return Returns the current matrix instance containing the sum of the addition.
+	 */
 	FakeMatrix4x4 &operator+=(const FakeMatrix4x4 &other)
 		{
 		M11 += other.M11;
@@ -2129,6 +2565,13 @@ struct FAKE_API FakeMatrix4x4
 		return *this;
 		}
 
+	/**
+	 * 
+	 * Overloaded -= operator.
+	 * 
+	 * @param other The matrix to subtract.
+	 * @return Returns the current matrix instance containing the difference of the subtraction.
+	 */
 	FakeMatrix4x4 &operator-=(const FakeMatrix4x4 &other)
 		{
 		M11 -= other.M11;
@@ -2154,6 +2597,13 @@ struct FAKE_API FakeMatrix4x4
 		return *this;
 		}
 
+	/**
+	 * 
+	 * Overloaded *= operator.
+	 * 
+	 * @param other The matrix to multiply.
+	 * @return Returns the current matrix instance containing the multiplication.
+	 */
 	FakeMatrix4x4 &operator*=(const FakeMatrix4x4 &other)
 		{
 		M11 = M11 * other.M11 + M12 * other.M21 + M13 * other.M31 + M14 * other.M41;
@@ -2179,6 +2629,13 @@ struct FAKE_API FakeMatrix4x4
 		return *this;
 		}
 
+	/**
+	 * 
+	 * Overloaded *= operator.
+	 * 
+	 * @param scalar The scalar to multiply.
+	 * @return Returns the current matrix instance containing the multiplication.
+	 */
 	FakeMatrix4x4 &operator*=(T scalar)
 		{
 		M11 *= scalar;
@@ -2204,6 +2661,13 @@ struct FAKE_API FakeMatrix4x4
 		return *this;
 		}
 
+	/**
+	 * 
+	 * Overloaded /= operator.
+	 * 
+	 * @param other The Matrix to divide.
+	 * @return Returns the current matrix instance containing the division.
+	 */
 	FakeMatrix4x4 &operator/=(const FakeMatrix4x4 &other)
 		{
 		// TODO: check if any is zero in right
@@ -2231,6 +2695,13 @@ struct FAKE_API FakeMatrix4x4
 		return *this;
 		}
 
+	/**
+	 * 
+	 * Overloaded /= operator.
+	 * 
+	 * @param scalar The scalar to divide.
+	 * @return Returns the current matrix instance containing the division.
+	 */
 	FakeMatrix4x4 &operator/=(T scalar)
 		{
 		FAKE_ASSERT(!fake_is_zero(scalar));
@@ -2259,6 +2730,13 @@ struct FAKE_API FakeMatrix4x4
 		return *this;
 		}
 
+	/**
+	 * 
+	 * Overloaded == operator.
+	 * 
+	 * @param other The matrix to compare.
+	 * @return Returns true if the matrices are identical - otherwise false.
+	 */
 	bool operator==(const FakeMatrix4x4 &other) const
 		{
 		uint32 equalCount = 0;
@@ -2274,11 +2752,25 @@ struct FAKE_API FakeMatrix4x4
 			return false;
 		}
 
+	/**
+	 * 
+	 * Overloaded != operator.
+	 * 
+	 * @param other The matrix to compare.
+	 * @return Returns true if the matrices are not identical - otherwise false.
+	 */
 	bool operator!=(const FakeMatrix4x4 &other) const
 		{
 		return !(*this == other);
 		}
 
+	/**
+	 * 
+	 * Overloaded < operator.
+	 * 
+	 * @param other The matrix to compare.
+	 * @return Returns true if the provided matrix is greater than the current instance - otherwise false.
+	 */
 	bool operator<(const FakeMatrix4x4 &other) const
 		{
 		uint32 lessCount = 0;
@@ -2294,6 +2786,13 @@ struct FAKE_API FakeMatrix4x4
 			return false;
 		}
 
+	/**
+	 * 
+	 * Overloaded <= operator.
+	 * 
+	 * @param other The matrix to compare.
+	 * @return Returns true if the provided matrix is greater or equal to the current instance - otherwise false.
+	 */
 	bool operator<=(const FakeMatrix4x4 &other) const
 		{
 		uint32 lessCount = 0;
@@ -2309,6 +2808,13 @@ struct FAKE_API FakeMatrix4x4
 			return false;
 		}
 
+	/**
+	 * 
+	 * Overloaded > operator.
+	 * 
+	 * @param other The matrix to compare.
+	 * @return Returns true if the provided matrix is less than the current instance - otherwise false.
+	 */
 	bool operator>(const FakeMatrix4x4 &other) const
 		{
 		uint32 greaterCount = 0;
@@ -2324,6 +2830,13 @@ struct FAKE_API FakeMatrix4x4
 			return false;
 		}
 
+	/**
+	 * 
+	 * Overloaded >= operator.
+	 * 
+	 * @param other The matrix to compare.
+	 * @return Returns true if the provided matrix is less or equal to the current instance - otherwise false.
+	 */
 	bool operator>=(const FakeMatrix4x4 &other) const
 		{
 		uint32 greaterCount = 0;
