@@ -966,6 +966,36 @@ class FakeString
 			}
 
 		/**
+		 * 
+		 * Overloaded << operator to add new strings and values to the string instance.
+		 * 
+		 * @param str The string to modify.
+		 * @param value The new value to add (can be any type).
+		 * @return Returns the modified string as a reference.
+		 */
+		template<typename T>
+		friend FakeString &operator<<(FakeString &str, const T &value)
+			{
+			FakeString newStr = FakeString::ToString<T>(value);
+			return str.Append(newStr);
+			}
+
+		/**
+		 * 
+		 * Overloaded >> operator to remove any string or type from the string instance.
+		 * 
+		 * @param str The string to modify.
+		 * @param value The value to remove (can be any type).
+		 * @return Returns the modified string as a reference.
+		 */
+		template<typename T>
+		friend FakeString &operator>>(FakeString &str, const T &value)
+			{
+			FakeString newStr = FakeString::ToString<T>(value);
+			return str.Remove(newStr);
+			}
+
+		/**
 		 *
 		 * Returns the letter at the specified index.
 		 *

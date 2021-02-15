@@ -139,7 +139,13 @@ struct FAKE_API FakeMatrix2x2
 	 * 
 	 * @param The matrix to copy.
 	 */
-	FakeMatrix2x2(const FakeMatrix2x2&) = default;
+	FakeMatrix2x2(const FakeMatrix2x2 &other)
+		{
+		M11 = other.M11;
+		M12 = other.M12;
+		M21 = other.M21;
+		M22 = other.M22;
+		}
 
 	/**
 	 * 
@@ -148,7 +154,14 @@ struct FAKE_API FakeMatrix2x2
 	 * @param The matrix to copy.
 	 * @return Returns the copied instance.
 	 */
-	FakeMatrix2x2 &operator=(const FakeMatrix2x2&) = default;
+	FakeMatrix2x2 &operator=(const FakeMatrix2x2 &other)
+		{
+		M11 = other.M11;
+		M12 = other.M12;
+		M21 = other.M21;
+		M22 = other.M22;
+		return *this;
+		}
 
 	/**
 	 *
@@ -158,13 +171,677 @@ struct FAKE_API FakeMatrix2x2
 	 */
 	FakeString ToString() const
 		{
-		std::stringstream ss << "Matrix2(";
-		ss << M11 << ", " << M12 << "," << std::endl;
-		ss << M21 << ", " << M22 << ")" << std::endl;
-		return ss.str();
+		FakeString result;
+		result << M11 << ", " << M12 << ",\n";
+		result << M21 << ", " << M22 << "\n";
+		return result;
 		}
 
+	/**
+	 * 
+	 * .
+	 * 
+	 * @param values
+	 * @param index
+	 */
+	void SetRow(const FakeVector2<T> &values, uint32 index = 0)
+		{
+		if (index == 0)
+			{
+			M11 = values.X;
+			M12 = values.Y;
+			}
+		else if (index == 1)
+			{
+			M21 = valuex.X;
+			M22 = valuex.Y;
+			}
+		}
 
+	/**
+	 * 
+	 * .
+	 * 
+	 * @param index
+	 * @return 
+	 */
+	FakeVector2<T> GetRow(uint32 index = 0) const
+		{
+		if (index == 0)
+			{
+			return FakeVector2<T>(M11, M12);
+			}
+		else if (index == 1)
+			{
+			return FakeVector2<T>(M21, M22);
+			}
+
+		return FakeVector2<T>::Zero;
+		}
+
+	/**
+	 * 
+	 * .
+	 * 
+	 * @param values
+	 * @param index
+	 */
+	void SetColumn(const FakeVector2<T> &values, uint32 index = 0)
+		{
+		if (index == 0)
+			{
+			M11 = values.X;
+			M21 = values.Y;
+			}
+		else if (index == 1)
+			{
+			M12 = values.X;
+			M22 = values.Y;
+			}
+		}
+
+	/**
+	 * 
+	 * .
+	 * 
+	 * @param index
+	 * @return 
+	 */
+	FakeVector2<T> GetColumn(uint32 index = 0) const
+		{
+		if (index == 0)
+			{
+			return FakeVector2<T>(M11, M21);
+			}
+		else if (index == 1)
+			{
+			return FakeVector2<T>(M12, M22);
+			}
+
+		return FakeVector2<T>::Zero;
+		}
+
+	/**
+	 * 
+	 * .
+	 * 
+	 * @return 
+	 */
+	bool IsIdentity() const
+		{
+		return *this == Identity;
+		}
+
+	/**
+	 * 
+	 * .
+	 * 
+	 * @return 
+	 */
+	T GetDeterminant() const
+		{
+		return (M11 * M22) - (M12 * M21);
+		}
+
+	/**
+	 * 
+	 * .
+	 * 
+	 */
+	void Inverse()
+		{
+		Inverse(*this, *this);
+		}
+
+	/**
+	 * 
+	 * .
+	 * 
+	 */
+	void Transpose()
+		{
+		Transpose(*this, *this);
+		}
+
+	/**
+	 * 
+	 * .
+	 * 
+	 * @param value
+	 * @param result
+	 */
+	static void Inverse(const FakeMatrix2x2 &value, FakeMatrix2x2 &result)
+		{
+		T det = (value.M11 * value.M22) - (value.M12 * value.M21);
+		if (FAKE_ABS(det) < FAKE_ZERO_TOLERANCE)
+			{
+			result = Zero;
+			return;
+			}
+
+		T inv = static_cast<T>(1) / det;
+		result.M11 = +value.M22 * inv;
+		result.M12 = -value.M12 * inv;
+		result.M21 = -value.M21 * inv;
+		result.M22 = +value.M11 * inv;
+		}
+
+	/**
+	 * 
+	 * .
+	 * 
+	 * @param value
+	 * @return 
+	 */
+	static FakeMatrix2x2 Inverse(const FakeMatrix2x2 &value)
+		{
+		FakeMatrix2x2 result;
+		Inverse(value, result);
+		return result;
+		}
+
+	/**
+	 * 
+	 * .
+	 * 
+	 * @param value
+	 * @param result
+	 */
+	static void Transpose(const FakeMatrix2x2 &value, FakeMatrix2x2 &result)
+		{
+		result.M11 = value.M11;
+		result.M12 = value.M21;
+		result.M21 = value.M12;
+		result.M22 = value.M22;
+		}
+
+	/**
+	 * 
+	 * .
+	 * 
+	 * @param value
+	 * @return 
+	 */
+	static FakeMatrix2x2 Transpose(const FakeMatrix2x2 &value)
+		{
+		FakeMatrix2x2 result;
+		Transpose(value, result);
+		return result;
+		}
+
+	/**
+	 * 
+	 * .
+	 * 
+	 * @param left
+	 * @param right
+	 * @param result
+	 */
+	static void Add(const FakeMatrix2x2 &left, const FakeMatrix2x2 &right, FakeMatrix2x2 &result)
+		{
+		result.M11 = left.M11 + right.M11;
+		result.M12 = left.M12 + right.M12;
+		result.M21 = left.M21 + right.M21;
+		result.M22 = left.M22 + right.M22;
+		}
+
+	/**
+	 * 
+	 * .
+	 * 
+	 * @param left
+	 * @param right
+	 * @return 
+	 */
+	static FakeMatrix2x2 Add(const FakeMatrix2x2 &left, const FakeMatrix2x2 &right)
+		{
+		FakeMatrix2x2 result;
+		Add(left, right, result);
+		return result;
+		}
+
+	/**
+	 * 
+	 * .
+	 * 
+	 * @param left
+	 * @param right
+	 * @param result
+	 */
+	static void Subtract(const FakeMatrix2x2 &left, const FakeMatrix2x2 &right, FakeMatrix2x2 &result)
+		{
+		result.M11 = left.M11 - right.M11;
+		result.M12 = left.M12 - right.M12;
+		result.M21 = left.M21 - right.M21;
+		result.M22 = left.M22 - right.M22;
+		}
+
+	/**
+	 * 
+	 * .
+	 * 
+	 * @param left
+	 * @param right
+	 * @return 
+	 */
+	static FakeMatrix2x2 Subtract(const FakeMatrix2x2 &left, const FakeMatrix2x2 &right)
+		{
+		FakeMatrix2x2 result;
+		Subtract(left, right, result);
+		return result;
+		}
+
+	/**
+	 * 
+	 * .
+	 * 
+	 * @param left
+	 * @param right
+	 * @param result
+	 */
+	static void Multiply(const FakeMatrix2x2 &left, const FakeMatrix2x2 &right, FakeMatrix2x2 &result)
+		{
+		result.M11 = left.M11 * right.M11;
+		result.M12 = left.M12 * right.M21;
+		result.M21 = left.M21 * right.M12;
+		result.M22 = left.M22 * right.M22;
+		}
+
+	/**
+	 * 
+	 * .
+	 * 
+	 * @param left
+	 * @param right
+	 * @return 
+	 */
+	static FakeMatrix2x2 Multiply(const FakeMatrix2x2 &left, const FakeMatrix2x2 &right)
+		{
+		FakeMatrix2x2 result;
+		Multiply(left, right, result);
+		return result;
+		}
+
+	/**
+	 * 
+	 * .
+	 * 
+	 * @param left
+	 * @param right
+	 * @param result
+	 */
+	static void Multiply(const FakeMatrix2x2 &left, T right, FakeMatrix2x2 &result)
+		{
+		result.M11 = left.M11 * right;
+		result.M12 = left.M12 * right;
+		result.M21 = left.M21 * right;
+		result.M22 = left.M22 * right;
+		}
+
+	/**
+	 * 
+	 * .
+	 * 
+	 * @param left
+	 * @param right
+	 * @return 
+	 */
+	static FakeMatrix2x2 Multiply(const FakeMatrix2x2 &left, T right)
+		{
+		FakeMatrix2x2 result;
+		Multiply(left, right, result);
+		return result;
+		}
+
+	/**
+	 * 
+	 * .
+	 * 
+	 * @param left
+	 * @param right
+	 * @param result
+	 */
+	static void Divide(const FakeMatrix2x2 &left, const FakeMatrix2x2 &right, FakeMatrix2x2 &result)
+		{
+		// TODO: check right
+
+		result.M11 = left.M11 / right.M11;
+		result.M12 = left.M12 / right.M12;
+		result.M21 = left.M21 / right.M21;
+		result.M22 = left.M22 / right.M22;
+		}
+
+	/**
+	 * 
+	 * .
+	 * 
+	 * @param left
+	 * @param right
+	 * @return 
+	 */
+	static FakeMatrix2x2 Divide(const FakeMatrix2x2 &left, const FakeMatrix2x2 &right)
+		{
+		FakeMatrix2x2 result;
+		Divide(left, right, result);
+		return result;
+		}
+
+	/**
+	 * 
+	 * .
+	 * 
+	 * @param left
+	 * @param right
+	 * @param result
+	 */
+	static void Divide(const FakeMatrix2x2 &left, T right, FakeMatrix2x2 &result)
+		{
+		FAKE_ASSERT(!fake_is_zero(right));
+		const T inv = static_cast<T>(1) / right;
+
+		result.M11 = left.M11 * inv;
+		result.M12 = left.M12 * inv;
+		result.M21 = left.M21 * inv;
+		result.M22 = left.M22 * inv;
+		}
+
+	/**
+	 * 
+	 * .
+	 * 
+	 * @param left
+	 * @param right
+	 * @return 
+	 */
+	static FakeMatrix2x2 Divide(const FakeMatrix2x2 &left, T right)
+		{
+		FakeMatrix2x2 result;
+		Divide(left, right, result);
+		return result;
+		}
+
+	/**
+	 * 
+	 * .
+	 * 
+	 * @param value
+	 * @param result
+	 */
+	static void Negate(const FakeMatrix2x2 &value, FakeMatrix2x2 &result)
+		{
+		result.M11 = -value.M11;
+		result.M12 = -value.M12;
+		result.M21 = -value.M21;
+		result.M22 = -value.M22;
+		}
+
+	/**
+	 * 
+	 * .
+	 * 
+	 * @param value
+	 * @return 
+	 */
+	static FakeMatrix2x2 Negate(const FakeMatrix2x2 &value)
+		{
+		FakeMatrix2x2 result;
+		Negate(value, result);
+		return result;
+		}
+
+	/**
+	 * 
+	 * .
+	 * 
+	 * @param other
+	 * @return 
+	 */
+	FakeMatrix2x2 operator+(const FakeMatrix2x2 &other) const
+		{
+		FakeMatrix2x2 result;
+		Add(*this, other, result);
+		return result;
+		}
+
+	/**
+	 * 
+	 * .
+	 * 
+	 * @param other
+	 * @return 
+	 */
+	FakeMatrix2x2 operator-(const FakeMatrix2x2 &other) const
+		{
+		FakeMatrix2x2 result;
+		Subtract(*this, other, result);
+		return result;
+		}
+
+	/**
+	 * 
+	 * .
+	 * 
+	 * @param other
+	 * @return 
+	 */
+	FakeMatrix2x2 operator*(const FakeMatrix2x2 &other) const
+		{
+		FakeMatrix2x2 result;
+		Multiply(*this, other, result);
+		return result;
+		}
+
+	/**
+	 * 
+	 * .
+	 * 
+	 * @param scalar
+	 * @return 
+	 */
+	FakeMatrix2x2 operator*(T scalar) const
+		{
+		FakeMatrix2x2 result;
+		Multiply(*this, scalar, result);
+		return result;
+		}
+
+	/**
+	 * 
+	 * .
+	 * 
+	 * @param other
+	 * @return 
+	 */
+	FakeMatrix2x2 operator/(const FakeMatrix2x2 &other) const
+		{
+		FakeMatrix2x2 result;
+		Divide(*this, other, result);
+		return result;
+		}
+
+	/**
+	 * 
+	 * .
+	 * 
+	 * @param scalar
+	 * @return 
+	 */
+	FakeMatrix2x2 operator/(T scalar) const
+		{
+		FakeMatrix2x2 result;
+		Divide(*this, scalar, result);
+		return result;
+		}
+
+	/**
+	 * 
+	 * .
+	 * 
+	 * @param other
+	 * @return 
+	 */
+	FakeMatrix2x2 &operator+=(const FakeMatrix2x2 &other)
+		{
+		Add(*this, other, *this);
+		return *this;
+		}
+
+	/**
+	 * 
+	 * .
+	 * 
+	 * @param other
+	 * @return 
+	 */
+	FakeMatrix2x2 &operator-=(const FakeMatrix2x2 &other)
+		{
+		Subtract(*this, other, *this);
+		return *this;
+		}
+
+	/**
+	 * 
+	 * .
+	 * 
+	 * @param other
+	 * @return 
+	 */
+	FakeMatrix2x2 &operator*=(const FakeMatrix2x2 &other)
+		{
+		Multiply(*this, other, *this);
+		return *this;
+		}
+
+	/**
+	 * 
+	 * .
+	 * 
+	 * @param scalar
+	 * @return 
+	 */
+	FakeMatrix2x2 &operator*=(T scalar)
+		{
+		Multiply(*this, scalar, *this);
+		return *this;
+		}
+
+	/**
+	 * 
+	 * .
+	 * 
+	 * @param other
+	 * @return 
+	 */
+	FakeMatrix2x2 &operator/=(const FakeMatrix2x2 &other)
+		{
+		Divide(*this, other, *this);
+		return *this;
+		}
+
+	/**
+	 * 
+	 * .
+	 * 
+	 * @param scalar
+	 * @return 
+	 */
+	FakeMatrix2x2 &operator/=(T scalar)
+		{
+		Divide(*this, scalar, *this);
+		return *this;
+		}
+
+	/**
+	 * 
+	 * .
+	 * 
+	 * @param other
+	 * @return 
+	 */
+	bool operator==(const FakeMatrix2x2 &other) const
+		{
+		return
+			fake_near_equal(M11, other.M11) &&
+			fake_near_equal(M12, other.M12) &&
+			fake_near_equal(M21, other.M21) &&
+			fake_near_equal(M22, other.M22);
+		}
+
+	/**
+	 * 
+	 * .
+	 * 
+	 * @param other
+	 * @return 
+	 */
+	bool operator!=(const FakeMatrix2x2 &other) const
+		{
+		return !(*this == other);
+		}
+
+	/**
+	 * 
+	 * .
+	 * 
+	 * @param other
+	 * @return 
+	 */
+	bool operator<(const FakeMatrix2x2 &other) const
+		{
+		return
+			M11 < other.M11 &&
+			M12 < other.M12 &&
+			M21 < other.M21 &&
+			M22 < other.M22;
+		}
+
+	/**
+	 * 
+	 * .
+	 * 
+	 * @param other
+	 * @return 
+	 */
+	bool operator<=(const FakeMatrix2x2 &other) const
+		{
+		return
+			M11 <= other.M11 &&
+			M12 <= other.M12 &&
+			M21 <= other.M21 &&
+			M22 <= other.M22;
+		}
+
+	/**
+	 * 
+	 * .
+	 * 
+	 * @param other
+	 * @return 
+	 */
+	bool operator>(const FakeMatrix2x2 &other) const
+		{
+		return
+			M11 > other.M11 &&
+			M12 > other.M12 &&
+			M21 > other.M21 &&
+			M22 > other.M22;
+		}
+
+	/**
+	 * 
+	 * .
+	 * 
+	 * @param other
+	 * @return 
+	 */
+	bool operator>=(const FakeMatrix2x2 &other) const
+		{
+		return
+			M11 >= other.M11 &&
+			M12 >= other.M12 &&
+			M21 >= other.M21 &&
+			M22 >= other.M22;
+		}
 
 	/**
 	 *
@@ -176,7 +853,7 @@ struct FAKE_API FakeMatrix2x2
 		{
 		static T arr[4];
 
-		for (int32 i = 0; i < 4; ++i)
+		for (uint32 i = 0; i < 4; ++i)
 			arr[i] = Raw[i];
 
 		return arr;
@@ -192,7 +869,7 @@ struct FAKE_API FakeMatrix2x2
 		{
 		static T arr[4];
 
-		for (int32 i = 0; i < 4; ++i)
+		for (uint32 i = 0; i < 4; ++i)
 			arr[i] = Raw[i];
 
 		return arr;
@@ -234,9 +911,8 @@ struct FAKE_API FakeMatrix2x2
 	 */
 	friend std::ostream &operator<<(std::ostream &stream, const FakeMatrix2x2 &matrix)
 		{
-		stream << "Matrix2(";
-		stream << matrix.M11 << ", " << matrix.M12 << "," << std::endl;
-		stream << matrix.M21 << ", " << matrix.M22 << ")" << std::endl;
+		stream << matrix.M11 << ", " << matrix.M12 << ",\n";
+		stream << matrix.M21 << ", " << matrix.M22;
 		return stream;
 		}
 	};

@@ -96,6 +96,7 @@
 
 // Scene
 #include "Engine/Scene/FakeCamera.h"
+#include "Engine/Scene/FakeEditorCamera.h"
 #include "Engine/Scene/FakeEntity.h"
 #include "Engine/Scene/FakeScene.h"
 

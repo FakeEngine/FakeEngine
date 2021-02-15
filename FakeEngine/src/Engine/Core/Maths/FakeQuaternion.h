@@ -26,6 +26,7 @@
 #include "Engine/Core/Maths/FakeVector2.h"
 #include "Engine/Core/Maths/FakeVector3.h"
 #include "Engine/Core/Maths/FakeVector4.h"
+#include "Engine/Core/Maths/FakeMatrix3x3.h"
 #include "Engine/Core/Maths/FakeMatrix4x4.h"
 
 /**
@@ -120,6 +121,23 @@ struct FAKE_API FakeQuaternion
 	 * 
 	 * constructor.
 	 * 
+	 * @param eulerAngles The euler angles to convert into a quaternion
+	 */
+	FakeQuaternion(const FakeVector3<T> &eulerAngles)
+		{
+		FakeVector3<T> c = { fake_cos(eulerAngles.X * static_cast<T>(0.5)), fake_cos(eulerAngles.Y * static_cast<T>(0.5)), fake_cos(eulerAngles.Z * static_cast<T>(0.5)) };
+		FakeVector3<T> s = { fake_sin(eulerAngles.X * static_cast<T>(0.5)), fake_sin(eulerAngles.Y * static_cast<T>(0.5)), fake_sin(eulerAngles.Z * static_cast<T>(0.5)) };
+
+		W = c.X * c.Y * c.Z + s.X * s.Y * s.Z;
+		X = s.X * c.Y * c.Z - c.X * s.Y * s.Z;
+		Y = c.X * s.Y * c.Z + s.X * c.Y * s.Z;
+		Z = c.X * c.Y * s.Z - s.X * s.Y * c.Z;
+		}
+
+	/**
+	 * 
+	 * constructor.
+	 * 
 	 * @param v The components to set.
 	 */
 	FakeQuaternion(const FakeVector4<T> &v)
@@ -147,6 +165,38 @@ struct FAKE_API FakeQuaternion
 	FakeString ToString() const
 		{
 		return "Quaternion(" + FakeString::ToString(X) + ", " + FakeString::ToString(Y) + ", " + FakeString::ToString(Z) + ", " + FakeString::ToString(W) + ")";
+		}
+
+	static FakeMatrix3x3<T> ToMatrix3(const FakeQuaternion &other)
+		{
+		FakeMatrix3x3<T> result = FakeMatrix3x3<T>::Identity;
+		T qxx(other.X * other.X);
+		T qyy(other.Y * other.Y);
+		T qzz(other.Z * other.Z);
+		T qxz(other.X * other.Z);
+		T qxy(other.X * other.Y);
+		T qyz(other.Y * other.Z);
+		T qwx(other.W * other.X);
+		T qwy(other.W * other.Y);
+		T qwz(other.W * other.Z);
+
+		result[0 + 0 * 3] = static_cast<T>(1) - static_cast<T>(2) * (qyy + qzz);
+		result[0 + 1 * 3] = static_cast<T>(2) * (qxy + qwz);
+		result[0 + 2 * 3] = static_cast<T>(2) * (qxz - qwy);
+
+		result[1 + 0 * 3] = static_cast<T>(2) * (qxy - qwz);
+		result[1 + 1 * 3] = static_cast<T>(1) - static_cast<T>(2) * (qxx + qzz);
+		result[1 + 2 * 3] = static_cast<T>(2) * (qyz + qwx);
+
+		result[2 + 0 * 3] = static_cast<T>(2) * (qxz + qwy);
+		result[2 + 1 * 3] = static_cast<T>(2) * (qyz - qwx);
+		result[2 + 2 * 3] = static_cast<T>(1) - static_cast<T>(2) * (qxx + qyy);
+		return result;
+		}
+
+	static FakeMatrix4x4<T> ToMatrix4(const FakeQuaternion &other)
+		{
+		return FakeMatrix4x4<T>(ToMatrix3(other));
 		}
 
 	/**
