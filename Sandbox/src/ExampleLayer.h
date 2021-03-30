@@ -28,15 +28,17 @@ class ExampleLayer : public FakeLayer
 	{
 	private:
 		FakeRef<FakeTexture2D> LogoTex;
+		FakeOrthographicCameraController Camera;
 
 	public:
 
+		ExampleLayer()
+			: Camera(1280.0f / 720.0f, true)
+			{
+			}
+
 		virtual void OnAttach() override
 			{
-			FakeMat2f mat(1, -1, 3, 4);
-			mat.Inverse();
-			std::cout << mat << std::endl;
-
 			LogoTex = FakeTexture2D::Create("assets/textures/Logo.png");
 			}
 
@@ -46,13 +48,16 @@ class ExampleLayer : public FakeLayer
 
 		virtual void OnEvent(FakeEvent &e) override
 			{
+			Camera.OnEvent(e);
 			}
 
 		virtual void OnRender(FakeTimeStep ts) override
 			{
-			FakeRenderer2D::BeginScene();
-			FakeRenderer2D::DrawQuad({ 2.0f, 0.0f, 0.0f }, { 0.5f, 0.5f }, 45.0f, { 0.8f, 0.2f, 0.3f, 1.0f });
-			FakeRenderer2D::DrawTexture({ 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f }, 90.0f, LogoTex, 1.0f, { 1.0f, 1.0f, 1.0f, 1.0f });
+			Camera.OnRender(ts);
+
+			FakeRenderer2D::BeginScene(FakeMat4f(1.0f));
+			FakeRenderer2D::DrawQuad({ 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f }, { 0.8f, 0.2f, 0.3f, 1.0f });
+		//	FakeRenderer2D::DrawTexture({ 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f }, LogoTex);
 			FakeRenderer2D::EndScene();
 			}
 	};

@@ -10,7 +10,7 @@ namespace Utils
 		{
 		FakeString result = path.Substr(path.LastIndexOf('/') + 1);
 		if (result.Contains("."))
-			result = result.Substr(0, result.Find("."));
+			result = result.Substr(0, result.IndexOf("."));
 
 		return result;
 		}

@@ -695,6 +695,21 @@ struct FAKE_API FakeQuaternion
 		}
 
 	/**
+	 *
+	 * Creates a quaternion given a rotation and an axis.
+	 *
+	 * @param axis The axis of rotation.
+	 * @param angle The angle of rotation (in radians).
+	 * @return Returns the rotated quaternion.
+	 */
+	static FakeQuaternion RotationAxis(const FakeVector3<T> &axis, T angle)
+		{
+		FakeQuaternion result;
+		RotationAxis(axis, angle, result);
+		return result;
+		}
+
+	/**
 	 * 
 	 * Creates a quaternion given a angle cosine and an axis.
 	 * 

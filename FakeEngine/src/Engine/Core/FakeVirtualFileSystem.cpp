@@ -83,6 +83,43 @@ FakeString FakeVirtualFileSystem::ReadTextFile(const FakeString &path)
 	return ResolvePhysicalPath(FakeString(path), physicalPath) ? FakeFileSystem::ReadTextFile(physicalPath) : FakeString();
 	}
 
+FakeString FakeVirtualFileSystem::GetFileNameFromPath(const FakeString &path)
+	{
+	FakeString result;
+	int32 pos = path.FirstIndexOf('/');
+	int32 i = 1;
+	while (pos != FakeString::NPOS)
+		{
+		result = path.Substr(pos + 1);
+		pos = path.FirstIndexOf('/', i);
+		++i;
+		}
+
+	if (result.Contains("."))
+		result = result.Substr(0, result.IndexOf("."));
+
+	return result;
+	}
+
+FakeString FakeVirtualFileSystem::GetFileExtension(const FakeString &path)
+	{
+	FakeString result;
+	int32 pos = path.FirstIndexOf('/');
+	int32 i = 1;
+	while (pos != FakeString::NPOS)
+		{
+		result = path.Substr(pos + 1);
+		pos = path.FirstIndexOf('/', i);
+		++i;
+		}
+
+	if (!result.Contains("."))
+		return "-1";
+
+	result = result.Substr(result.IndexOf(".") + 1);
+	return result;
+	}
+
 bool FakeVirtualFileSystem::WriteFile(const FakeString &path, Byte *buffer, int64 size)
 	{
 	FAKE_ASSERT(Instance, "FileSystem not created!");

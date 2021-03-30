@@ -1158,6 +1158,37 @@ struct FAKE_API FakeMatrix4x4
 
 	/**
 	 * 
+	 * .
+	 * 
+	 * @param left
+	 * @param right
+	 * @param result
+	 */
+	static void Multiply(const FakeMatrix4x4 &left, const FakeVector4<T> &right, FakeVector4<T> &result)
+		{
+		result.X = left.Raw[ 0] * right.X + left.Raw[ 1] * right.Y + left.Raw[ 2] * right.Z + left.Raw[ 3] * right.W;
+		result.Y = left.Raw[ 4] * right.X + left.Raw[ 5] * right.Y + left.Raw[ 6] * right.Z + left.Raw[ 7] * right.W;
+		result.Z = left.Raw[ 8] * right.X + left.Raw[ 9] * right.Y + left.Raw[10] * right.Z + left.Raw[11] * right.W;
+		result.W = left.Raw[12] * right.X + left.Raw[13] * right.Y + left.Raw[14] * right.Z + left.Raw[15] * right.W;
+		}
+
+	/**
+	 * 
+	 * .
+	 * 
+	 * @param left
+	 * @param right
+	 * @return 
+	 */
+	static FakeMatrix4x4 Multiply(const FakeMatrix4x4 &left, const FakeVector4<T> &right)
+		{
+		FakeMatrix4x4 result;
+		Multiply(left, right, result);
+		return result;
+		}
+
+	/**
+	 * 
 	 * Calculates the quotient of two matrices.
 	 * 
 	 * @param left The first matrix to divide.
@@ -1222,9 +1253,16 @@ struct FAKE_API FakeMatrix4x4
 		const T d14 = value.M21 *  b3 + value.M22 * -b1 + value.M23 * b0;
 
 		T det = value.M11 * d11 - value.M12 * d12 + value.M13 * d13 - value.M14 * d14;
-		if (FAKE_ABS(det) <= static_cast<T>(1e-12))
+		if (FAKE_ABS(det) <= static_cast<T>(1e-12)) // Matrix is singular
 			{
 			result = Zero;
+			return;
+			}
+			
+		// Drehmatrix   Spiegel / Drehspiegelmatrix
+		if (det == static_cast<T>(1) || det == static_cast<T>(-1)) // Matrix ist orthogonal
+			{
+			Transpose(value, result);
 			return;
 			}
 
@@ -2508,6 +2546,20 @@ struct FAKE_API FakeMatrix4x4
 
 	/**
 	 * 
+	 * Overloaded * operator.
+	 * 
+	 * @param vector The vector to multiply.
+	 * @return Returns the current matrix instance containing the multiplication.
+	 */
+	FakeVector4<T> operator*(const FakeVector4<T> &vector) const
+		{
+		FakeVector4<T> result;
+		Multiply(*this, vector, result);
+		return result;
+		}
+
+	/**
+	 * 
 	 * Overloaded / operator.
 	 * 
 	 * @param other The matrix to divide.
@@ -2584,6 +2636,20 @@ struct FAKE_API FakeMatrix4x4
 		{
 		Multiply(*this, scalar, *this);
 		return *this;
+		}
+
+	/**
+	 * 
+	 * Overloaded *= operator.
+	 * 
+	 * @param vector The vector to multiply.
+	 * @return Returns the current matrix instance containing the multiplication.
+	 */
+	FakeVector4<T> &operator*=(const FakeVector4<T> &vector)
+		{
+		FakeVector4<T> result;
+		Multiply(*this, vector, result);
+		return result;
 		}
 
 	/**

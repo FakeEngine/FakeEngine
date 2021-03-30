@@ -32,7 +32,40 @@
  */
 class FakeRenderer2D
 	{
+	private:
+
+		/**
+		 * 
+		 * .
+		 * 
+		 */
+		static void FlushAndReset();
+
+		/**
+		 * 
+		 * .
+		 * 
+		 */
+		static void FlushAndResetLines();
+
 	public:
+
+		struct Statistics
+			{
+			uint32 DrawCalls = 0;
+			uint32 QuadCount = 0;
+			uint32 LineCount = 0;
+
+			uint32 GetTotalVertexCount()
+				{
+				return QuadCount * 4 + LineCount * 2;
+				}
+
+			uint32 GetTotalIndexCount()
+				{
+				return QuadCount * 6 + LineCount * 2;
+				}
+			};
 
 		/**
 		 * 
@@ -53,7 +86,7 @@ class FakeRenderer2D
 		 * .
 		 * 
 		 */
-		static void BeginScene();
+		static void BeginScene(const FakeMat4f &viewProjection, bool depthTest = true);
 
 		/**
 		 * 
@@ -66,23 +99,31 @@ class FakeRenderer2D
 		 * 
 		 * .
 		 * 
-		 * @param position
-		 * @param size
-		 * @param rotation
-		 * @param color
 		 */
-		static void DrawQuad(const FakeVec3f &position, const FakeVec2f &size, float rotation, const FakeVec4f &color);
+		static void Flush();
 		
 		/**
 		 * 
 		 * .
 		 * 
-		 * @param position
-		 * @param size
-		 * @param rotation
-		 * @param texture
-		 * @param tilingFactor
-		 * @param tintColor
 		 */
-		static void DrawTexture(const FakeVec3f &position, const FakeVec2f &size, float rotation, const FakeRef<FakeTexture2D> &texture, float tilingFactor, const FakeVec4f &tintColor);
+		static void ResetStats();
+
+		/**
+		 * 
+		 * .
+		 * 
+		 * @return 
+		 */
+		static Statistics GetStats();
+
+		static void DrawQuad(const FakeMat4f &transform, const FakeVec4f &color);
+		static void DrawQuad(const FakeVec2f &position, const FakeVec2f &size, const FakeVec4f &color);
+		static void DrawQuad(const FakeVec3f &position, const FakeVec2f &size, const FakeVec4f &color);
+
+		static void DrawTexture(const FakeMat4f &transform, const FakeRef<FakeTexture2D> &texture, float tilingFactor = 1.0f, const FakeVec4f &tintColor = FakeVec4f(1.0f, 1.0f, 1.0f, 1.0f));
+		static void DrawTexture(const FakeVec2f &position, const FakeVec2f &size, const FakeRef<FakeTexture2D> &texture, float tilingFactor = 1.0f, const FakeVec4f &tintColor = FakeVec4f(1.0f, 1.0f, 1.0f, 1.0f));
+		static void DrawTexture(const FakeVec3f &position, const FakeVec2f &size, const FakeRef<FakeTexture2D> &texture, float tilingFactor = 1.0f, const FakeVec4f &tintColor = FakeVec4f(1.0f, 1.0f, 1.0f, 1.0f));
+
+
 	};

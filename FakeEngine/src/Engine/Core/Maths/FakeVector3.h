@@ -332,6 +332,21 @@ struct FAKE_API FakeVector3
 
 	/**
 	 * 
+	 * .
+	 * 
+	 * @param value
+	 * @param result
+	 */
+	static void Normalize(const FakeVector3 &value, FakeVector3 &result)
+		{
+		T invLen = value.InvLength();
+		result.X = value.X * invLen;
+		result.Y = value.Y * invLen;
+		result.Z = value.Z * invLen;
+		}
+
+	/**
+	 * 
 	 * Returns the average arithmetic of the vector.
 	 * 
 	 * @return Returns the average arithmetic of the vector.
