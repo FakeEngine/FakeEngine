@@ -27,7 +27,6 @@ void FakeRenderer::Init()
 
 	Data.ShaderLibrary->Load("assets/shaders/FakeFlatColorShader.glsl");
 	Data.ShaderLibrary->Load("assets/shaders/FakeTextureShader.glsl");
-	Data.ShaderLibrary->Load("assets/shaders/FakeSimpleTextureShader.glsl");
 
 	FakeRenderer2D::Init();
 	}

@@ -17,15 +17,6 @@ namespace Utils
 		return false;
 		}
 
-	static FakeString fake_extract_name(const FakeString &path)
-		{
-		FakeString result = path.Substr(path.LastIndexOf('/') + 1);
-		if (result.Contains("."))
-			result = result.Substr(0, result.Find("."));
-
-		return result;
-		}
-
 	static const char *fake_find_token(const char *str, const FakeString &token)
 		{
 		const char *t = str;
@@ -49,7 +40,7 @@ namespace Utils
 	static std::vector<FakeString> fake_split_string(const FakeString &string, const FakeString &delimiters)
 		{
 		uint32 start = 0;
-		uint32 end = string.Find(delimiters);
+		uint32 end = string.IndexOf(delimiters);
 
 		std::vector<FakeString> result;
 
@@ -64,7 +55,7 @@ namespace Utils
 				result.push_back(token);
 
 			start = end + 1;
-			end = string.Find(delimiters, start);
+			end = string.IndexOf(delimiters, start);
 			}
 
 		return result;
@@ -113,7 +104,7 @@ namespace Utils
 
 	static bool fake_starts_with(const FakeString &string, const FakeString &start)
 		{
-		return string.Find(start) == 0;
+		return string.IndexOf(start) == 0;
 		}
 
 	static GLenum fake_shader_type_from_string(const FakeString &type)
@@ -132,7 +123,7 @@ namespace Utils
 FakeOpenGLShader::FakeOpenGLShader(const FakeString &filePath)
 	{
 	AssetPath = FakeVirtualFileSystem::Get()->GetAbsoluteFilePath(filePath);
-	Name = Utils::fake_extract_name(AssetPath);
+	Name = FakeVirtualFileSystem::Get()->GetFileNameFromPath(AssetPath);
 	FAKE_LOG_TRACE("Loading Shader %s", *Name);
 	Reload();
 	}
@@ -493,10 +484,10 @@ std::unordered_map<GLenum, std::string> FakeOpenGLShader::PreProcess(const FakeS
 	std::unordered_map<uint32, std::string> shaderSources;
 
 	FakeString typeToken = "#type";
-	uint32 pos = source.Find(typeToken); // Start of shader type declaration line
+	uint32 pos = source.IndexOf(typeToken); // Start of shader type declaration line
 	while (pos != FakeString::NPOS)
 		{
-		uint32 eol = source.Find("\n", pos); // End of shader type declaration line
+		uint32 eol = source.IndexOf("\n", pos); // End of shader type declaration line
 		FAKE_ASSERT(eol != FakeString::NPOS, "Syntax Error!");
 
 		uint32 begin = pos + typeToken.Length() + 1; // Start of shader type name (after "#type " keyword)
@@ -506,7 +497,7 @@ std::unordered_map<GLenum, std::string> FakeOpenGLShader::PreProcess(const FakeS
 
 		uint32 nextLinePos = source.FirstIndexNotOf("\n", eol); // Start of shader code after shader type declaration line
 		FAKE_ASSERT(nextLinePos != FakeString::NPOS, "Syntax Error!");
-		pos = source.Find(typeToken, nextLinePos); // Start of next shader type declaration line
+		pos = source.IndexOf(typeToken, nextLinePos); // Start of next shader type declaration line
 
 		FakeString newSrc = (pos == FakeString::NPOS) ? source.Substr(nextLinePos) : source.Substr(nextLinePos, pos - nextLinePos + typeToken.Length() + type.Length());
 		newSrc = newSrc.Replace("\r", "");

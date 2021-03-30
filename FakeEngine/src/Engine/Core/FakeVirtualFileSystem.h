@@ -119,6 +119,24 @@ class FAKE_API FakeVirtualFileSystem
 
 		/**
 		 *
+		 * Finds the Filename in a path and returns it without the extension.
+		 *
+		 * @param path The virtual path to a file on the disk.
+		 * @return Returns the file name of a path without the extension.
+		 */
+		FakeString GetFileNameFromPath(const FakeString &path);
+
+		/**
+		 *
+		 * Finds the file extension in a path and returns it withoit the name.
+		 *
+		 * @param path The virtual path to a file on the disk.
+		 * @return Returns the file extension of any file name.
+		 */
+		FakeString GetFileExtension(const FakeString &path);
+
+		/**
+		 *
 		 * This function takes a virtual path to a file and stores the provided data in that file.
 		 *
 		 * @param path The virtual path to a file on the disk.

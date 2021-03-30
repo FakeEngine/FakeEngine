@@ -23,7 +23,8 @@ project "LevelEditor"
 		"../FakeEngine/src",
 		"../FakeEngine/vendor",
 		"%{includedir.entt}",
-		"%{includedir.asio}"
+		"%{includedir.asio}",
+		"%{includedir.glm}"
 		}
 		
 	postbuildcommands 

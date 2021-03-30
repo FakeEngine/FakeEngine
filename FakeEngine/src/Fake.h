@@ -90,6 +90,8 @@
 #include "Engine/Renderer/FakeMeshFactory.h"
 #include "Engine/Renderer/FakeMaterial.h"
 #include "Engine/Renderer/FakeMaterialInstance.h"
+#include "Engine/Renderer/FakeOrthographicCamera.h"
+#include "Engine/Renderer/FakeOrthographicCameraController.h"
 
 // Net
 #include "Engine/Net/FakeNet.h"

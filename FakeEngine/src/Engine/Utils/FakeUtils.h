@@ -22,6 +22,5 @@
 
 #pragma once
 
-#include "FakeStringHelperUtils.h"
 #include "FakeWindowHelperUtils.h"
 

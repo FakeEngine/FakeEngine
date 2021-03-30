@@ -4,18 +4,10 @@
 #include <stb_image.h>
 
 #include "Engine/Renderer/FakeRenderer.h"
+#include "Engine/Core/FakeVirtualFileSystem.h"
 
 namespace Utils
 	{
-	static FakeString fake_texture_2D_extract_name(const FakeString &path)
-		{
-		FakeString result = path.Substr(path.LastIndexOf('/') + 1);
-		if (result.Contains("."))
-			result = result.Substr(0, result.Find("."));
-
-		return result;
-		}
-
 	static GLenum fake_to_open_gl_texture_format(FakeTextureFormat format)
 		{
 		switch (format)
@@ -33,7 +25,7 @@ namespace Utils
 FakeOpenGLTexture2D::FakeOpenGLTexture2D(const FakeString &path, bool srgb, FakeTextureWrap wrap)
 	: FilePath(path)
 	{
-	Name = Utils::fake_texture_2D_extract_name(path);
+	Name = FakeVirtualFileSystem::Get()->GetFileNameFromPath(path);
 	stbi_set_flip_vertically_on_load(1);
 
 	int32 width, height, channels;
@@ -62,7 +54,6 @@ FakeOpenGLTexture2D::FakeOpenGLTexture2D(const FakeString &path, bool srgb, Fake
 	FakeRef<FakeOpenGLTexture2D> instance = this;
 	FakeRenderer::Submit([instance, srgb]() mutable
 		{
-		// TODO: Consolidate properly
 		if (srgb)
 			{
 			glCreateTextures(GL_TEXTURE_2D, 1, &instance->RendererID);
