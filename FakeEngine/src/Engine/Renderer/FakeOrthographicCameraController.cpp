@@ -27,24 +27,24 @@ void FakeOrthographicCameraController::OnRender(FakeTimeStep ts)
 	{
 	if (FakeInput::IsKeyPressed(FAKE_KEY_A))
 		{
-		CameraPosition.x -= cos(glm::radians(CameraRotation)) * CameraTranslationSpeed * (float)ts;
-		CameraPosition.y -= sin(glm::radians(CameraRotation)) * CameraTranslationSpeed * (float)ts;
+		CameraPosition.X -= fake_cos(fake_radians(CameraRotation)) * CameraTranslationSpeed * (float)ts;
+		CameraPosition.Y -= fake_sin(fake_radians(CameraRotation)) * CameraTranslationSpeed * (float)ts;
 		}
 	else if (FakeInput::IsKeyPressed(FAKE_KEY_D))
 		{
-		CameraPosition.x += cos(glm::radians(CameraRotation)) * CameraTranslationSpeed * (float) ts;
-		CameraPosition.y += sin(glm::radians(CameraRotation)) * CameraTranslationSpeed * (float) ts;
+		CameraPosition.X += fake_cos(fake_radians(CameraRotation)) * CameraTranslationSpeed * (float) ts;
+		CameraPosition.Y += fake_sin(fake_radians(CameraRotation)) * CameraTranslationSpeed * (float) ts;
 		}
 
 	if (FakeInput::IsKeyPressed(FAKE_KEY_W))
 		{
-		CameraPosition.x += -sin(glm::radians(CameraRotation)) * CameraTranslationSpeed * (float) ts;
-		CameraPosition.y += cos(glm::radians(CameraRotation)) * CameraTranslationSpeed * (float)ts;
+		CameraPosition.X += -fake_sin(fake_radians(CameraRotation)) * CameraTranslationSpeed * (float) ts;
+		CameraPosition.Y += fake_cos(fake_radians(CameraRotation)) * CameraTranslationSpeed * (float)ts;
 		}
 	else if (FakeInput::IsKeyPressed(FAKE_KEY_S))
 		{
-		CameraPosition.x -= -sin(glm::radians(CameraRotation)) * CameraTranslationSpeed * (float) ts;
-		CameraPosition.y -= cos(glm::radians(CameraRotation)) * CameraTranslationSpeed * (float)ts;
+		CameraPosition.X -= -fake_sin(fake_radians(CameraRotation)) * CameraTranslationSpeed * (float) ts;
+		CameraPosition.Y -= fake_cos(fake_radians(CameraRotation)) * CameraTranslationSpeed * (float)ts;
 		}
 
 	if (Rotation)

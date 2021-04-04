@@ -15,7 +15,7 @@ class FakeOrthographicCameraController
 
 		bool Rotation;
 
-		glm::vec3 CameraPosition = { 0.0f, 0.0f, 0.0f };
+		FakeVec3f CameraPosition = { 0.0f, 0.0f, 0.0f };
 		float CameraRotation = 0.0f; // In degrees, in the anti-clockwise direction
 		float CameraTranslationSpeed = 0.000000000000001f, CameraRotationSpeed = 5.0f;
 

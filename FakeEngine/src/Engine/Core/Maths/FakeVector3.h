@@ -480,11 +480,11 @@ struct FAKE_API FakeVector3
 	 * 
 	 * Returns true if the elements of the vectors are near or equal to each other.
 	 * 
-	 * @param x The first vector to compare with.
-	 * @param y The second vector to compare to.
+	 * @param a The first vector to compare with.
+	 * @param b The second vector to compare to.
 	 * @return Returns true if the elements of the vectors are near or equal to each other.
 	 */
-	static bool NearEqual(const FakeVector3 &x, const FakeVector3 &y)
+	static bool NearEqual(const FakeVector3 &a, const FakeVector3 &b)
 		{
 		return fake_near_equal(a.X, b.X) && fake_near_equal(a.Y, b.Y) && fake_near_equal(a.Z, b.Z);
 		}
@@ -493,12 +493,12 @@ struct FAKE_API FakeVector3
 	 * 
 	 * Returns true if the elements of the vectors are near or equal to each other (using the provided epsilon).
 	 * 
-	 * @param x The first vector to compare with.
-	 * @param y The second vector to compare to.
+	 * @param a The first vector to compare with.
+	 * @param b The second vector to compare to.
 	 * @param epsilon The epsilon that should be used.
 	 * @return Returns true if the elements of the vectors are near or equal to each other (using the provided epsilon).
 	 */
-	static bool NearEqual(const FakeVector3 &x, const FakeVector3 &y, T epsilon)
+	static bool NearEqual(const FakeVector3 &a, const FakeVector3 &b, T epsilon)
 		{
 		return fake_near_equal(a.X, b.X, epsilon) && fake_near_equal(a.Y, b.Y, epsilon) && fake_near_equal(a.Z, b.Z, epsilon);
 		}

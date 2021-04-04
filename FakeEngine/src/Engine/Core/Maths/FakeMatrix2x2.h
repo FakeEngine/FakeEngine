@@ -193,8 +193,8 @@ struct FAKE_API FakeMatrix2x2
 			}
 		else if (index == 1)
 			{
-			M21 = valuex.X;
-			M22 = valuex.Y;
+			M21 = values.X;
+			M22 = values.Y;
 			}
 		}
 

@@ -1321,7 +1321,7 @@ struct FAKE_API FakeMatrix4x4
 		{
 		FakeMatrix4x4 result;
 		Inverse(value, result);
-		returnr result;
+		return result;
 		}
 
 	/**

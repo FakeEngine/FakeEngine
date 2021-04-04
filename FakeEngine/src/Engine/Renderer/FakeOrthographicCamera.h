@@ -2,18 +2,17 @@
 
 #pragma once
 
-// TEMP
-#include <glm/glm.hpp>
+#include "Engine/Core/Maths/FakeMaths.h"
 
 class FakeOrthographicCamera
 	{
 	private:
 
-		glm::mat4 ProjectionMatrix;
-		glm::mat4 ViewMatrix;
-		glm::mat4 ViewProjectionMatrix;
+		FakeMat4f ProjectionMatrix;
+		FakeMat4f ViewMatrix;
+		FakeMat4f ViewProjectionMatrix;
 
-		glm::vec3 Position = { 0.0f, 0.0f, 0.0f };
+		FakeVec3f Position = { 0.0f, 0.0f, 0.0f };
 		float Rotation = 0.0f;
 
 		void RecalculateViewMatrix();
@@ -23,13 +22,13 @@ class FakeOrthographicCamera
 		FakeOrthographicCamera(float left, float right, float bottom, float top);
 		void SetProjection(float left, float right, float bottom, float top);
 
-		const glm::vec3 &GetPosition() const { return Position; }
-		void SetPosition(const glm::vec3 &position) { Position = position; RecalculateViewMatrix(); }
+		const FakeVec3f &GetPosition() const { return Position; }
+		void SetPosition(const FakeVec3f &position) { Position = position; RecalculateViewMatrix(); }
 
 		float GetRotation() const { return Rotation; }
 		void SetRotation(float rotation) { Rotation = rotation; RecalculateViewMatrix(); }
 
-		const glm::mat4 &GetViewMatrix() const { return ViewMatrix; }
-		const glm::mat4 &GetProjectionMatrix() const { return ProjectionMatrix; }
-		const glm::mat4 &GetViewProjectionMatrix() const { return ViewProjectionMatrix; }
+		const FakeMat4f &GetViewMatrix() const { return ViewMatrix; }
+		const FakeMat4f &GetProjectionMatrix() const { return ProjectionMatrix; }
+		const FakeMat4f &GetViewProjectionMatrix() const { return ViewProjectionMatrix; }
 	};
