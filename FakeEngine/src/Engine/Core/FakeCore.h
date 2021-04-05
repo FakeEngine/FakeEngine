@@ -26,6 +26,7 @@
 #include "Engine/Core/FakeReference.h"
 #include "Engine/Core/FakeAssert.h"
 #include "Engine/Core/FakeLog.h"
+#include "Engine/Core/Profiler/FakeProfilerTimer.h"
 
 #include "Engine/Core/Defines/FakeCompiler.h"
 #include "Engine/Core/Defines/FakeConsole.h"

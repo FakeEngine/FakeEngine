@@ -15,7 +15,8 @@ project "FakeEngine"
 		"_CRT_SECURE_NO_WARNINGS",
 		"FAKE_RENDERER_OPENGL",
 		"FAKE_LIBRARY_EXPORT",
-		"FAKE_PLATFORM_64BITS"
+		"FAKE_PLATFORM_64BITS",
+		"FAKE_ENABLE_PROFILER" -- TODO: move this to debug configuration --
 		}
 		
 	files
