@@ -3,6 +3,7 @@
 
 #include "Engine/Core/FakeTimer.h"
 #include "Engine/Core/FakeVirtualFileSystem.h"
+#include "Engine/Core/Window/FakeInput.h"
 #include "Engine/Renderer/FakeRenderer.h"
 #include "Engine/Renderer/FakeFramebufferPool.h"
 
@@ -134,6 +135,13 @@ void FakeApplication::Run()
 		ElapsedTime = (currentTime - InitialTime) / 1000000.0;
 		FakeTimeStep ts = (ElapsedTime - FrameTime) * 1000.0;
 		FrameTime = ElapsedTime;
+
+	#ifdef FAKE_DEBUG
+		if (FakeInput::IsKeyPressed(FAKE_KEY_ESCAPE))
+			{
+			break;
+			}
+	#endif
 
 		if (!Minimized && EnableRendering)
 			{

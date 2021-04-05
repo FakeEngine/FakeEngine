@@ -28,12 +28,12 @@ class ExampleLayer : public FakeLayer
 	{
 	private:
 		FakeRef<FakeTexture2D> LogoTex;
-		FakeOrthographicCameraController Camera;
+		FakeOrthographicCameraController CameraController;
 
 	public:
 
 		ExampleLayer()
-			: Camera(1280.0f / 720.0f, true)
+			: CameraController(1280.0f / 720.0f, true)
 			{
 			}
 
@@ -48,14 +48,14 @@ class ExampleLayer : public FakeLayer
 
 		virtual void OnEvent(FakeEvent &e) override
 			{
-			Camera.OnEvent(e);
+			CameraController.OnEvent(e);
 			}
 
 		virtual void OnRender(FakeTimeStep ts) override
 			{
-			Camera.OnRender(ts);
+			CameraController.OnRender(ts);
 
-			FakeRenderer2D::BeginScene(FakeMat4f(1.0f));
+			FakeRenderer2D::BeginScene(CameraController.GetCamera().GetViewProjectionMatrix());
 			FakeRenderer2D::DrawQuad({ 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f }, { 0.8f, 0.2f, 0.3f, 1.0f });
 		//	FakeRenderer2D::DrawTexture({ 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f }, LogoTex);
 			FakeRenderer2D::EndScene();

@@ -68,8 +68,12 @@ FakeString::FakeString(FakeString &&other) noexcept
 
 FakeString::~FakeString()
 	{
+	Size = 0;
 	if (Data)
+		{
 		delete[] Data;
+		Data = nullptr;
+		}
 	}
 
 FakeString &FakeString::operator=(const FakeString &other)
@@ -103,6 +107,13 @@ FakeString &FakeString::operator=(FakeString &&other) noexcept
 		}
 
 	return *this;
+	}
+
+void FakeString::Clear()
+	{
+	delete[] Data;
+	Data = nullptr;
+	Size = 0;
 	}
 
 void FakeString::Resize(int64 size)

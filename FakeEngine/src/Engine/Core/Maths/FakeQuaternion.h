@@ -1,10 +1,10 @@
 /*****************************************************************
  * \file   FakeQuaternion.h
- * \brief  
- * 
+ * \brief
+ *
  * \author Can Karka
  * \date   January 2021
- * 
+ *
  * Copyright (C) 2021 Can Karka
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,111 +22,49 @@
 
 #pragma once
 
-#include "Engine/Core/Maths/FakeMathFunctions.h"
-#include "Engine/Core/Maths/FakeVector2.h"
-#include "Engine/Core/Maths/FakeVector3.h"
-#include "Engine/Core/Maths/FakeVector4.h"
-#include "Engine/Core/Maths/FakeMatrix3x3.h"
-#include "Engine/Core/Maths/FakeMatrix4x4.h"
+#include "FakeMathFunctions.h"
+#include "FakeVector2.h"
+#include "FakeVector3.h"
+#include "FakeVector4.h"
+#include "FakeMatrix2x2.h"
+#include "FakeMatrix3x3.h"
+#include "FakeMatrix4x4.h"
 
-/**
- * 
- * Represents a four dimensional mathematical quaternion. Euler angles are stored in: pitch, yaw, roll order (x, y, z).
- * 
- */
 template<typename T>
-struct FAKE_API FakeQuaternion
+struct FakeQuaternion
 	{
-
 	union
 		{
 		struct
 			{
-			/**
-			 * 
-			 * The X component.
-			 * 
-			 */
 			T X;
-
-			/**
-			 * 
-			 * The Y component.
-			 * 
-			 */
 			T Y;
-
-			/**
-			 * 
-			 * The Z component.
-			 * 
-			 */
 			T Z;
-
-			/**
-			 * 
-			 * The W component.
-			 * 
-			 */
 			T W;
 			};
 
 		T Raw[4];
 		};
 
-	// Quaternion with all components equal 0.
 	static FakeQuaternion Zero;
-
-	// Quaternion with all components equal 1.
 	static FakeQuaternion One;
-
-	// Identity quaternion (represents no rotation).
 	static FakeQuaternion Identity;
 
-	/**
-	 * 
-	 * empty constructor.
-	 * 
-	 */
 	FakeQuaternion()
-		{
-		}
+		{		}
 
-	/**
-	 * 
-	 * constructor.
-	 * 
-	 * @param xyzw The value to set
-	 */
-	FakeQuaternion(const T xyzw)
+	FakeQuaternion(T xyzw)
 		: X(xyzw), Y(xyzw), Z(xyzw), W(xyzw)
-		{
-		}
+		{		}
 
-	/**
-	 * 
-	 * constructor.
-	 * 
-	 * @param x The X component to set.
-	 * @param y The Y component to set.
-	 * @param z The Z component to set.
-	 * @param w The W component to set.
-	 */
-	FakeQuaternion(const T x, const T y, const T z, const T w)
+	FakeQuaternion(T x, T y, T z, T w)
 		: X(x), Y(y), Z(z), W(w)
-		{
-		}
+		{		}
 
-	/**
-	 * 
-	 * constructor.
-	 * 
-	 * @param eulerAngles The euler angles to convert into a quaternion
-	 */
-	FakeQuaternion(const FakeVector3<T> &eulerAngles)
+	FakeQuaternion(const FakeVector3<T> &euler)
 		{
-		FakeVector3<T> c = { fake_cos(eulerAngles.X * static_cast<T>(0.5)), fake_cos(eulerAngles.Y * static_cast<T>(0.5)), fake_cos(eulerAngles.Z * static_cast<T>(0.5)) };
-		FakeVector3<T> s = { fake_sin(eulerAngles.X * static_cast<T>(0.5)), fake_sin(eulerAngles.Y * static_cast<T>(0.5)), fake_sin(eulerAngles.Z * static_cast<T>(0.5)) };
+		FakeVector3<T> c = { fake_cos(euler.X * static_cast<T>(0.5)), fake_cos(euler.Y * static_cast<T>(0.5)), fake_cos(euler.Z * static_cast<T>(0.5)) };
+		FakeVector3<T> s = { fake_sin(euler.X * static_cast<T>(0.5)), fake_sin(euler.Y * static_cast<T>(0.5)), fake_sin(euler.Z * static_cast<T>(0.5)) };
 
 		W = c.X * c.Y * c.Z + s.X * s.Y * s.Z;
 		X = s.X * c.Y * c.Z - c.X * s.Y * s.Z;
@@ -134,42 +72,21 @@ struct FAKE_API FakeQuaternion
 		Z = c.X * c.Y * s.Z - s.X * s.Y * c.Z;
 		}
 
-	/**
-	 * 
-	 * constructor.
-	 * 
-	 * @param v The components to set.
-	 */
 	FakeQuaternion(const FakeVector4<T> &v)
 		: X(v.X), Y(v.Y), Z(v.Z), W(v.W)
-		{
-		}
+		{		}
 
-	/**
-	 * 
-	 * copy constructor.
-	 * 
-	 * @param other The instance to copy.
-	 */
 	FakeQuaternion(const FakeQuaternion &other)
 		: X(other.X), Y(other.Y), Z(other.Z), W(other.W)
-		{
-		}
+		{		}
 
-	/**
-	 * 
-	 * Converts the quaternion to a String.
-	 * 
-	 * @return Returns the Quaternion as a String.
-	 */
 	FakeString ToString() const
 		{
-		return "Quaternion(" + FakeString::ToString(X) + ", " + FakeString::ToString(Y) + ", " + FakeString::ToString(Z) + ", " + FakeString::ToString(W) + ")";
+		return FakeString::ToString(X) + ", " + FakeString::ToString(Y) + ", " + FakeString::ToString(Z) + ", " + FakeString::ToString(W);
 		}
 
-	static FakeMatrix3x3<T> ToMatrix3(const FakeQuaternion &other)
+	static void ToMatrix3(const FakeQuaternion &other, FakeMatrix3x3<T> &result)
 		{
-		FakeMatrix3x3<T> result = FakeMatrix3x3<T>::Identity;
 		T qxx(other.X * other.X);
 		T qyy(other.Y * other.Y);
 		T qzz(other.Z * other.Z);
@@ -191,6 +108,12 @@ struct FAKE_API FakeQuaternion
 		result[2 + 0 * 3] = static_cast<T>(2) * (qxz + qwy);
 		result[2 + 1 * 3] = static_cast<T>(2) * (qyz - qwx);
 		result[2 + 2 * 3] = static_cast<T>(1) - static_cast<T>(2) * (qxx + qyy);
+		}
+
+	static FakeMatrix3x3<T> ToMatrix3(const FakeQuaternion &other)
+		{
+		FakeMatrix3x3<T> result;
+		ToMatrix3(other, result);
 		return result;
 		}
 
@@ -199,89 +122,51 @@ struct FAKE_API FakeQuaternion
 		return FakeMatrix4x4<T>(ToMatrix3(other));
 		}
 
-	/**
-	 * 
-	 * Gets a value indicating whether this instance is equivalent to the identity quaternion.
-	 * 
-	 * @return Returns true if the current instance is the identity quaternion.
-	 */
 	bool IsIdentity() const
 		{
-		return fake_is_zero(X) && fake_is_zero(Y) && fake_is_zero(Z) && fake_is_zero(W);
+		return *this == Identity;
 		}
 
-	/**
-	 * 
-	 * Gets a value indicting whether this instance is normalized.
-	 * 
-	 * @return Returns true if is normalized, otherwise false.
-	 */
+	bool IsZero() const
+		{
+		return *this == Zero;
+		}
+
+	bool IsOne() const
+		{
+		return *this == One;
+		}
+
 	bool IsNormalized() const
 		{
 		return fake_is_one(X * X + Y * Y + Z * Z + W * W);
 		}
 
-	/**
-	 * 
-	 * Returns true if quaternion has one or more components which are not a number.
-	 * 
-	 * @return Returns true if one or more components are NaN.
-	 */
 	bool IsNaN() const
 		{
 		return isnan(X) || isnan(Y) || isnan(Z) || isnan(W);
 		}
 
-	/**
-	 * 
-	 * Returns true if quaternion has one or more components equal to +/- infinity.
-	 * 
-	 * @return Returns true if one or more components are equal to +/- infinity.
-	 */
 	bool IsInfinity() const
 		{
 		return isinf(X) || isinf(Y) || isinf(Z) || isinf(W);
 		}
 
-	/**
-	 * 
-	 * Returns true if quaternion has one or more components equal to +/- infinity or NaN.
-	 * 
-	 * @return Returns true if one or more components are equal to +/- infinity or NaN.
-	 */
 	bool IsNanOrInfinity() const
 		{
 		return IsNaN() || IsInfinity();
 		}
 
-	/**
-	 * 
-	 * Calculates the length of the quaternion.
-	 * 
-	 * @return Returns the length of the quaternion.
-	 */
 	T Length() const
 		{
 		return fake_sqrt(X * X + Y * Y + Z * Z + W * W);
 		}
 
-	/**
-	 * 
-	 * Calculates the squared length of the quaternion.
-	 * 
-	 * @return Returns the squared length of the quaternion.
-	 */
 	T LengthSquared() const
 		{
 		return X * X + Y * Y + Z * Z + W * W;
 		}
 
-	/**
-	 * 
-	 * Gets the angle of the quaternion.
-	 * 
-	 * @return Returns the angle.
-	 */
 	T GetAngle() const
 		{
 		const T length = X * X + Y * Y + Z * Z;
@@ -291,12 +176,6 @@ struct FAKE_API FakeQuaternion
 		return static_cast<T>(2) * acosf(fake_clamp(W, static_cast<T>(-1), static_cast<T>(1)));
 		}
 
-	/**
-	 * 
-	 * Gets the axis components of the quaternion.
-	 * 
-	 * @return Returns the axis.
-	 */
 	FakeVector3<T> GetAxis() const
 		{
 		const T length = X * X + Y * Y + Z * Z;
@@ -307,12 +186,6 @@ struct FAKE_API FakeQuaternion
 		return FakeVector3<T>(X * inv, Y * inv, Z * inv);
 		}
 
-	/**
-	 * 
-	 * Gets the euler angle (pitch, yaw, roll) in degrees.
-	 * 
-	 * @return Returns The euler angle.
-	 */
 	FakeVector3<T> GetEuler() const
 		{
 		FakeVector3<T> result;
@@ -350,16 +223,11 @@ struct FAKE_API FakeQuaternion
 			result.Z = fake_atan2(static_cast<T>(2) * q.X * q.Y + static_cast<T>(2) * q.Z * q.W, static_cast<T>(1) - static_cast<T>(2) * (q.Y * q.Y + q.Z * q.Z));
 			}
 
-		result *= (static_cast<T>(180) / FAKE_PI);
+		result *= static_cast<T>(180.0f / FAKE_PI);
 		result.UnwindEuler();
 		return result;
 		}
 
-	/**
-	 * 
-	 * Conjugates the quaternion.
-	 * 
-	 */
 	void Conjugate()
 		{
 		X = -X;
@@ -367,23 +235,12 @@ struct FAKE_API FakeQuaternion
 		Z = -Z;
 		}
 
-	/**
-	 * 
-	 * Gets the conjugated quaternion.
-	 * 
-	 * @return Returns the conjugated quaternion.
-	 */
-	FakeQuaternion Conjugated() const
+	FakeQuaternion GetConjugate() const
 		{
 		return { -X, -Y, -Z, W };
 		}
 
-	/**
-	 * 
-	 * Conjugates and renormalizes the quaternion.
-	 * 
-	 */
-	void Invert()
+	void Inverse()
 		{
 		T lengthSq = LengthSquared();
 		if (!fake_is_zero(lengthSq))
@@ -392,15 +249,10 @@ struct FAKE_API FakeQuaternion
 			X = -X * lengthSq;
 			Y = -Y * lengthSq;
 			Z = -Z * lengthSq;
-			W =  W * lengthSq;
+			W = W * lengthSq;
 			}
 		}
 
-	/**
-	 * 
-	 * Reverses the direction of the quaternion.
-	 * 
-	 */
 	void Negate()
 		{
 		X = -X;
@@ -409,11 +261,6 @@ struct FAKE_API FakeQuaternion
 		W = -W;
 		}
 
-	/**
-	 * 
-	 * Converts the quaternion into a unit quaternion.
-	 * 
-	 */
 	void Normalize()
 		{
 		const T length = Length();
@@ -427,196 +274,40 @@ struct FAKE_API FakeQuaternion
 			}
 		}
 
-	/**
-	 *
-	 * Determines whether the specified quaternions are equal.
-	 *
-	 * @param a The first quaternion to compare.
-	 * @param b The second quaternion to compare.
-	 * @return Returns true if the specified quaternions are equal - otherwise false.
-	 */
 	static bool NearEqual(const FakeQuaternion &a, const FakeQuaternion &b)
 		{
 		return Dot(a, b) > static_cast<T>(0.99999999);
 		}
 
-	/**
-	 *
-	 * Determines whether the specified quaternions are equal.
-	 *
-	 * @param a The first quaternion to compare.
-	 * @param b The second quaternion to compare.
-	 * @param epsilon The comparision threshold value.
-	 * @return Returns true if the specified quaternions are equal - otherwise false.
-	 */
 	static bool NearEqual(const FakeQuaternion &a, const FakeQuaternion &b, T epsilon)
 		{
 		return Dot(a, b) > static_cast<T>(1) - epsilon;
 		}
 
-	/**
-	 * 
-	 * Scales a quaternion by the given value.
-	 * 
-	 * @param scale The amount by which to scale the quaternion.
-	 */
-	void Multiply(T scale)
+	static T Dot(const FakeQuaternion &a, const FakeQuaternion &b)
 		{
-		X *= scale;
-		Y *= scale;
-		Z *= scale;
-		W *= scale;
+		return a.X * b.X + a.Y * b.Y + a.Z * b.Z + a.W * b.W;
 		}
 
-	/**
-	 * 
-	 * Multiplies a quaternion with another instance.
-	 * 
-	 * @param other The other quaternion to multiply the current instance with.
-	 */
-	void Multiply(const FakeQuaternion &other)
-		{
-		const T a = Y * other.Z - Z * other.Y;
-		const T b = Z * other.X - X * other.Z;
-		const T c = X * other.Y - Y * other.X;
-		const T d = X * other.X + Y * other.Y + Z * other.Z;
-
-		X = X * other.W + other.X * W + a;
-		Y = Y * other.W + other.Y * W + b;
-		Z = Z * other.W + other.Z * W + c;
-		W = W * other.W - d;
-		}
-
-	/**
-	 * 
-	 * Calculates the dot product of two quaternions.
-	 * 
-	 * @param left The first source quaternion.
-	 * @param right The second source quaternion.
-	 * @return Returns the dot product of the two quaternions.
-	 */
-	static T Dot(const FakeQuaternion &left, const FakeQuaternion &right)
-		{
-		return left.X * right.X + left.Y * right.Y + left.Z * right.Z + left.W * right.W;
-		}
-
-	/**
-	 * 
-	 * Calculates the angle between two quaternions.
-	 * 
-	 * @param a The first source quaternion.
-	 * @param b The second source quaternion.
-	 * @return Returns the angle in degrees between two quaternions a and b.
-	 */
 	static T AngleBetween(const FakeQuaternion &a, const FakeQuaternion &b)
 		{
 		const T dot = Dot(a, b);
 		return dot > static_cast<T>(0.99999999) ? 0 : fake_acos(fake_min(FAKE_ABS(dot), static_cast<T>(1))) * static_cast<T>(2) * static_cast<T>(57.29578);
 		}
 
-	/**
-	 * 
-	 * Adds two quaternions.
-	 * 
-	 * @param left The first quaternion to add.
-	 * @param right The second quaternion to add.
-	 * @param result The result where the addition should be stored in.
-	 */
-	static void Add(const FakeQuaternion &left, const FakeQuaternion &right, FakeQuaternion &result)
-		{
-		result.X = left.X + right.X;
-		result.Y = left.Y + right.Y;
-		result.Z = left.Z + right.Z;
-		result.W = left.W + right.W;
-		}
-
-	/**
-	 * 
-	 * Subtracts two quaternions.
-	 * 
-	 * @param left The first quaternion to subtract.
-	 * @param right The second quaternion to subtract.
-	 * @param result The result where the subtraction should be stored in.
-	 */
-	static void Subtract(const FakeQuaternion &left, const FakeQuaternion &right, FakeQuaternion &result)
-		{
-		result.X = left.X - right.X;
-		result.Y = left.Y - right.Y;
-		result.Z = left.Z - right.Z;
-		result.W = left.W - right.W;
-		}
-
-	/**
-	 * 
-	 * Multiplies a quaternion with another.
-	 * 
-	 * @param left The first quaternion to multiply.
-	 * @param right The second quaternion to multiply.
-	 * @param result The result where the multiplication should be stored in.
-	 */
-	static void Multiply(const FakeQuaternion &left, const FakeQuaternion &right, FakeQuaternion &result)
-		{
-		const T a = left.Y * right.Z - left.Z * right.Y;
-		const T b = left.Z * right.X - left.X * right.Z;
-		const T c = left.X * right.Y - left.Y * right.X;
-		const T d = left.X * right.X + left.Y * right.Y + left.Z * right.Z;
-
-		result.X = left.X * right.W + right.X * left.W + a;
-		result.Y = left.Y * right.W + right.Y * left.W + b;
-		result.Z = left.Z * right.W + right.Z * left.W + c;
-		result.W = left.W * right.W - d;
-		}
-
-	/**
-	 * 
-	 * Scales a quaternion by a given value.
-	 * 
-	 * @param value The quaternion to scale.
-	 * @param scale The amount by which the quaternion should be scaled.
-	 * @param result The result where the scaled quaternion should be stored in.
-	 */
-	static void Multiply(const FakeQuaternion &value, T scale, FakeQuaternion &result)
-		{
-		result.X = value.X * scale;
-		result.Y = value.Y * scale;
-		result.Z = value.Z * scale;
-		result.W = value.W * scale;
-		}
-
-	/**
-	 * 
-	 * Calculates the inverse of the specified quaternion.
-	 * 
-	 * @param value The quaternion whose inverse is to be calculated.
-	 * @param result The result where the inversion of the specified quaternion is stored in.
-	 */
-	static void Invert(const FakeQuaternion &value, FakeQuaternion &result)
+	static void Inverse(const FakeQuaternion &value, FakeQuaternion &result)
 		{
 		result = value;
-		result.Invert();
+		result.Inverse();
 		}
 
-	/**
-	 * 
-	 * Calculates the inverse of the specified quaternion.
-	 * 
-	 * @param value The quaternion whose inverse is to be calculated.
-	 * @return Returns the inverse of the specified quaternion.
-	 */
-	static FakeQuaternion Invert(const FakeQuaternion &value)
+	static FakeQuaternion Inverse(const FakeQuaternion &value)
 		{
 		FakeQuaternion result;
-		Invert(value, result);
+		Inverse(value, result);
 		return result;
 		}
 
-	/**
-	 * 
-	 * Reverses the direction of a given quaternion.
-	 * 
-	 * @param value The quaternion to negate.
-	 * @param result The result where the negated quaternion is stored in.
-	 */
 	static void Negate(const FakeQuaternion &value, FakeQuaternion &result)
 		{
 		result.X = -value.X;
@@ -625,15 +316,6 @@ struct FAKE_API FakeQuaternion
 		result.W = -value.W;
 		}
 
-	/**
-	 * 
-	 * Performs a linear interpolation between two quaternions.
-	 * 
-	 * @param start The start quaternion.
-	 * @param end The end quaternion.
-	 * @param amount Value between 0 and 1 indicating the weight of end.
-	 * @param result The result where the interpolated quaternion is stored in.
-	 */
 	static void Lerp(const FakeQuaternion &start, const FakeQuaternion &end, T amount, FakeQuaternion &result)
 		{
 		const T inverse = static_cast<T>(1) - amount;
@@ -655,15 +337,6 @@ struct FAKE_API FakeQuaternion
 		result.Normalize();
 		}
 
-	/**
-	 * 
-	 * Performs a linear interpolation between two quaternions.
-	 * 
-	 * @param start The start quaternion.
-	 * @param end The end quaternion.
-	 * @param amount Value between 0 and 1 indicating the weight of end.
-	 * @return Returns the interpolated quaternion.
-	 */
 	static FakeQuaternion Lerp(const FakeQuaternion &start, const FakeQuaternion &end, T amount)
 		{
 		FakeQuaternion result;
@@ -671,14 +344,6 @@ struct FAKE_API FakeQuaternion
 		return result;
 		}
 
-	/**
-	 * 
-	 * Creates a quaternion given a rotation and an axis.
-	 * 
-	 * @param axis The axis of rotation.
-	 * @param angle The angle of rotation (in radians).
-	 * @param result The result where the rotated quaternion is stored in.
-	 */
 	static void RotationAxis(const FakeVector3<T> &axis, T angle, FakeQuaternion &result)
 		{
 		FakeVector3<T> normalized;
@@ -694,14 +359,6 @@ struct FAKE_API FakeQuaternion
 		result.W = cosHalf;
 		}
 
-	/**
-	 *
-	 * Creates a quaternion given a rotation and an axis.
-	 *
-	 * @param axis The axis of rotation.
-	 * @param angle The angle of rotation (in radians).
-	 * @return Returns the rotated quaternion.
-	 */
 	static FakeQuaternion RotationAxis(const FakeVector3<T> &axis, T angle)
 		{
 		FakeQuaternion result;
@@ -709,21 +366,13 @@ struct FAKE_API FakeQuaternion
 		return result;
 		}
 
-	/**
-	 * 
-	 * Creates a quaternion given a angle cosine and an axis.
-	 * 
-	 * @param axis The axis of rotation.
-	 * @param cos The angle cosine, it must be within [-1, 1] range (in radians).
-	 * @param result The result where the rotated quaternion is stored in.
-	 */
 	static void RotationCosAxis(const FakeVector3<T> &axis, T cos, FakeQuaternion &result)
 		{
 		FakeVector3<T> normalized;
 		FakeVector3<T>::Normalize(axis, normalized);
 
-		const T cosHalf2 = (static_cast<T>(1.0) + cos) * static_cast<T>(0.5);
-		const T sinHalf2 = static_cast<T>(1.0) - cosHalf2;
+		const T cosHalf2 = (static_cast<T>(1) + cos) * static_cast<T>(0.5);
+		const T sinHalf2 = static_cast<T>(1) - cosHalf2;
 		const T cosHalf = fake_sqrt(cosHalf2);
 		const T sinHalf = fake_sqrt(sinHalf2);
 
@@ -733,20 +382,13 @@ struct FAKE_API FakeQuaternion
 		result.W = cosHalf;
 		}
 
-	/**
-	 * 
-	 * Creates a quaternion given a rotation matrix.
-	 * 
-	 * @param matrix The rotation matrix.
-	 * @param result The result where the rotated quaternion is stored in.
-	 */
 	static void RotationMatrix(const FakeMatrix4x4<T> &matrix, FakeQuaternion &result)
 		{
 		T sqrtV;
 		T half;
 		const T scale = matrix.M11 + matrix.M22 + matrix.M33;
 
-		if (scale > static_cast<T>(0.0))
+		if (scale > static_cast<T>(0))
 			{
 			sqrtV = fake_sqrt(scale + static_cast<T>(1.0));
 			result.W = sqrtV * static_cast<T>(0.5);
@@ -758,7 +400,7 @@ struct FAKE_API FakeQuaternion
 			}
 		else if (matrix.M11 >= matrix.M22 && matrix.M11 >= matrix.M33)
 			{
-			sqrtV = fake_sqrt(static_cast<T>(1.0) + matrix.M11 - matrix.M22 - matrix.M33);
+			sqrtV = fake_sqrt(static_cast<T>(1) + matrix.M11 - matrix.M22 - matrix.M33);
 			half = static_cast<T>(0.5) / sqrtV;
 
 			result = FakeQuaternion(
@@ -793,13 +435,6 @@ struct FAKE_API FakeQuaternion
 		result.Normalize();
 		}
 
-	/**
-	 * 
-	 * Creates a quaternion given a rotation matrix.
-	 * 
-	 * @param matrix The rotation matrix.
-	 * @return Returns the rotated quaternion.
-	 */
 	static FakeQuaternion RotationMatrix(const FakeMatrix4x4<T> &matrix)
 		{
 		FakeQuaternion result;
@@ -807,15 +442,6 @@ struct FAKE_API FakeQuaternion
 		return result;
 		}
 
-	/**
-	 * 
-	 * Creates a left-handed, look-at quaternion.
-	 * 
-	 * @param eye The position of the viewer's eye (mostly camera position).
-	 * @param target The camera look-at target (mostly object position).
-	 * @param up The camera's up vector (mostly normal vector of the camera object).
-	 * @param result The result where the lookAt projection is stored.
-	 */
 	static void LookAt(const FakeVector3<T> &eye, const FakeVector3<T> &target, const FakeVector3<T> &up, FakeQuaternion &result)
 		{
 		FakeMatrix4x4<T> matrix;
@@ -823,29 +449,11 @@ struct FAKE_API FakeQuaternion
 		RotationMatrix(matrix, result);
 		}
 
-	/**
-	 * 
-	 * Creates a left-handed, look-at quaternion.
-	 * 
-	 * @param forward The camera's forward direction.
-	 * @param up The camera's up vector.
-	 * @param result The result where the lookAt projection is stored.
-	 */
 	static void RotationLookAt(const FakeVector3<T> &forward, const FakeVector3<T> &up, FakeQuaternion &result)
 		{
 		LookAt(FakeVector3<T>::Zero, forward, up, result);
 		}
 
-	/**
-	 * 
-	 * Creates a left-handed spherical billboard that rotates around a specified object position.
-	 * 
-	 * @param objectPosition The position of the object around which the billboard will rotate.
-	 * @param cameraPosition The position of the camera.
-	 * @param cameraUpVector The up vector of the camera.
-	 * @param cameraForwardVector The forward vector of the camera.
-	 * @param result The result where the billboard projection is stored in.
-	 */
 	static void Billboard(const FakeVector3<T> &objectPosition, const FakeVector3<T> &cameraPosition, const FakeVector3<T> &cameraUpVector, const FakeVector3<T> &cameraForwardVector, FakeQuaternion &result)
 		{
 		FakeMatrix4x4<T> matrix;
@@ -853,14 +461,6 @@ struct FAKE_API FakeQuaternion
 		RotationMatrix(matrix, result);
 		}
 
-	/**
-	 * 
-	 * Creates a rotation with the specified forward and upwards directions.
-	 * 
-	 * @param forward The forward direction. Direction to orient towards.
-	 * @param up The up direction.
-	 * @param result The result where the calculated quaternion will be stored in.
-	 */
 	static void LookRotation(const FakeVector3<T> &forward, const FakeVector3<T> &up, FakeQuaternion &result)
 		{
 		FakeVector3<T> forwardNorm = forward;
@@ -930,14 +530,6 @@ struct FAKE_API FakeQuaternion
 		#undef m22
 		}
 
-	/**
-	 * 
-	 * Creates a rotation with the specified forward and upwards directions.
-	 * 
-	 * @param forward The forward direction. Direction to orient towards.
-	 * @param up The up direction.
-	 * @return Returns the calculated quaternion.
-	 */
 	static FakeQuaternion LookRotation(const FakeVector3<T> &forward, const FakeVector3<T> &up)
 		{
 		FakeQuaternion result;
@@ -945,15 +537,6 @@ struct FAKE_API FakeQuaternion
 		return result;
 		}
 
-	/**
-	 * 
-	 * Gets the shortest arc quaternion to rotate this vector to the destination vector.
-	 * 
-	 * @param from The source vector.
-	 * @param to The destination vector.
-	 * @param fallbackAxis The fallback axis.
-	 * @param result The result where the calculated quaternion will be stored in.
-	 */
 	static void GetRotation(const FakeVector3<T> &from, const FakeVector3<T> &to, const FakeVector3<T> &fallbackAxis, FakeQuaternion &result)
 		{
 		// Based on Stan Melax's article in Game Programming Gems
@@ -983,7 +566,7 @@ struct FAKE_API FakeQuaternion
 				{
 				// Generate an axis
 				FakeVector3<T> axis = FakeVector3<T>::Cross(FakeVector3<T>::UnitX, from);
-				if (axis.LengthSquared() < ZeroTolerance) // Pick another if colinear
+				if (axis.LengthSquared() < FAKE_ZERO_TOLERANCE) // Pick another if colinear
 					axis = FakeVector3<T>::Cross(FakeVector3<T>::UnitY, from);
 				axis.Normalize();
 				RotationAxis(axis, FAKE_PI, result);
@@ -1005,15 +588,6 @@ struct FAKE_API FakeQuaternion
 			}
 		}
 
-	/**
-	 * 
-	 * Gets the shortest arc quaternion to rotate this vector to the destination vector.
-	 * 
-	 * @param from The source vector.
-	 * @param to The destination vector.
-	 * @param fallbackAxis The fallback axis.
-	 * @return Returns the calculated quaternion.
-	 */
 	static FakeQuaternion GetRotation(const FakeVector3<T> &from, const FakeVector3<T> &to, const FakeVector3<T> &fallbackAxis)
 		{
 		FakeQuaternion result;
@@ -1021,14 +595,6 @@ struct FAKE_API FakeQuaternion
 		return result;
 		}
 
-	/**
-	 * 
-	 * Gets the quaternion that will rotate vector from into vector to, around their plan perpendicular axis.The input vectors don't need to be normalized.
-	 * 
-	 * @param from The source vector.
-	 * @param to The destination vector.
-	 * @param result The result where the calculated quaternion will be stored in.
-	 */
 	static void FindBetween(const FakeVector3<T> &from, const FakeVector3<T> &to, FakeQuaternion &result)
 		{
 		// http://lolengine.net/blog/2014/02/24/quaternion-from-two-vectors-final
@@ -1038,7 +604,7 @@ struct FAKE_API FakeQuaternion
 			result = Identity;
 			return;
 			}
-		const float w = normFromNormTo + FakeVector3<T>::Dot(from, to);
+		const T w = normFromNormTo + FakeVector3<T>::Dot(from, to);
 		if (w < 1.e-6f * normFromNormTo)
 			{
 			result = FAKE_ABS(from.X) > FAKE_ABS(from.Z)
@@ -1054,14 +620,6 @@ struct FAKE_API FakeQuaternion
 		result.Normalize();
 		}
 
-	/**
-	 * 
-	 * Gets the quaternion that will rotate vector from into vector to, around their plan perpendicular axis.The input vectors don't need to be normalized.
-	 * 
-	 * @param from The source vector.
-	 * @param to The destination vector.
-	 * @return Returns the calculated quaternion.
-	 */
 	static FakeQuaternion FindBetween(const FakeVector3<T> &from, const FakeVector3<T> &to)
 		{
 		FakeQuaternion result;
@@ -1069,15 +627,6 @@ struct FAKE_API FakeQuaternion
 		return result;
 		}
 
-	/**
-	 * 
-	 * Interpolates between two quaternions, using spherical linear interpolation.
-	 * 
-	 * @param start The start quaternion.
-	 * @param end The end quaternion.
-	 * @param amount Value between 0 and 1 indicating the weight of end.
-	 * @param result The result where the interpolated quaternion is stored in.
-	 */
 	static void Slerp(const FakeQuaternion &start, const FakeQuaternion &end, T amount, FakeQuaternion &result)
 		{
 		T opposite;
@@ -1103,15 +652,6 @@ struct FAKE_API FakeQuaternion
 		result.W = inverse * start.W + opposite * end.W;
 		}
 
-	/**
-	 * 
-	 * Interpolates between two quaternions, using spherical linear interpolation.
-	 * 
-	 * @param start The start quaternion.
-	 * @param end The end quaternion.
-	 * @param amount Value between 0 and 1 indicating the weight of end.
-	 * @return Returns the interpolated quaternion.
-	 */
 	static FakeQuaternion Slerp(const FakeQuaternion &start, const FakeQuaternion &end, T amount)
 		{
 		FakeQuaternion result;
@@ -1119,15 +659,6 @@ struct FAKE_API FakeQuaternion
 		return result;
 		}
 
-	/**
-	 * 
-	 * Creates a quaternion given a yaw, pitch, and roll value (in degrees).
-	 * 
-	 * @param x The roll value (in degrees).
-	 * @param y The pitch value (in degrees).
-	 * @param z The yaw value (in degrees).
-	 * @return Returns a quaternion created with euler angles.
-	 */
 	static FakeQuaternion Euler(T x, T y, T z)
 		{
 		const T halfRoll = z * ((FAKE_PI / static_cast<T>(180.0)) * static_cast<T>(0.5));
@@ -1148,13 +679,6 @@ struct FAKE_API FakeQuaternion
 			cosYawOver2 * cosPitchOver2 * cosRollOver2 + sinYawOver2 * sinPitchOver2 * sinRollOver2);
 		}
 
-	/**
-	 * 
-	 * Creates a quaternion given a yaw, pitch, and roll value (in degrees).
-	 * 
-	 * @param euler The Euler angles in degrees (in raw, pitch, yaw order).
-	 * @return Returns a quaternion created with euler angles.
-	 */
 	static FakeQuaternion Euler(const FakeVector3<T> &euler)
 		{
 		const T halfRoll = euler.Z * ((FAKE_PI / static_cast<T>(180.0)) * static_cast<T>(0.5));
@@ -1175,15 +699,6 @@ struct FAKE_API FakeQuaternion
 			cosYawOver2 * cosPitchOver2 * cosRollOver2 + sinYawOver2 * sinPitchOver2 * sinRollOver2);
 		}
 
-	/**
-	 * 
-	 * Creates a quaternion given a yaw, pitch, and roll value (in radians).
-	 * 
-	 * @param yaw The yaw of the rotation (in radians).
-	 * @param pitch The pitch of the rotation (in radians).
-	 * @param roll The roll of the rotation (in radians).
-	 * @param result The result where the euler rotation is stored in.
-	 */
 	static void RotationEuler(T yaw, T pitch, T roll, FakeQuaternion &result)
 		{
 		const T halfRoll = roll * static_cast<T>(0.5);
@@ -1203,15 +718,6 @@ struct FAKE_API FakeQuaternion
 		result.Z = cosYawOver2 * cosPitchOver2 * sinRollOver2 - sinYawOver2 * sinPitchOver2 * cosRollOver2;
 		}
 
-	/**
-	 * 
-	 * Creates a quaternion given a yaw, pitch, and roll value (in radians).
-	 * 
-	 * @param yaw The yaw of the rotation (in radians).
-	 * @param pitch The pitch of the rotation (in radians).
-	 * @param roll The roll of the rotation (in radians).
-	 * @return Returns the euler rotation as a quaternion.
-	 */
 	static FakeQuaternion RotationEuler(T yaw, T pitch, T roll)
 		{
 		FakeQuaternion result;
@@ -1219,13 +725,132 @@ struct FAKE_API FakeQuaternion
 		return result;
 		}
 
-	/**
-	 * 
-	 * Adds two quaternions.
-	 * 
-	 * @param other The quaternion to add.
-	 * @return Returns the sum of the two quaternions (other and current instance).
-	 */
+	void Multiply(T scale)
+		{
+		X *= scale;
+		Y *= scale;
+		Z *= scale;
+		W *= scale;
+		}
+
+	void Multiply(const FakeQuaternion &other)
+		{
+		const T a = Y * other.Z - Z * other.Y;
+		const T b = Z * other.X - X * other.Z;
+		const T c = X * other.Y - Y * other.X;
+		const T d = X * other.X + Y * other.Y + Z * other.Z;
+
+		X = X * other.W + other.X * W + a;
+		Y = Y * other.W + other.Y * W + b;
+		Z = Z * other.W + other.Z * W + c;
+		W = W * other.W - d;
+		}
+
+	static void Add(const FakeQuaternion &a, const FakeQuaternion &b, FakeQuaternion &result)
+		{
+		result.X = a.X + b.X;
+		result.Y = a.Y + b.Y;
+		result.Z = a.Z + b.Z;
+		result.W = a.W + b.W;
+		}
+
+	static void Subtract(const FakeQuaternion &a, const FakeQuaternion &b, FakeQuaternion &result)
+		{
+		result.X = a.X - b.X;
+		result.Y = a.Y - b.Y;
+		result.Z = a.Z - b.Z;
+		result.W = a.W - b.W;
+		}
+
+	static void Multiply(const FakeQuaternion &a, const FakeQuaternion &b, FakeQuaternion &result)
+		{
+		const T aa = a.Y * b.Z - a.Z * b.Y;
+		const T bb = a.Z * b.X - a.X * b.Z;
+		const T cc = a.X * b.Y - a.Y * b.X;
+		const T dd = a.X * b.X + a.Y * b.Y + a.Z * b.Z;
+
+		result.X = a.X * b.W + b.X * a.W + aa;
+		result.Y = a.Y * b.W + b.Y * a.W + bb;
+		result.Z = a.Z * b.W + b.Z * a.W + cc;
+		result.W = a.W * b.W - dd;
+		}
+
+	static void Multiply(const FakeQuaternion &a, T b, FakeQuaternion &result)
+		{
+		result.X = a.X * b;
+		result.Y = a.Y * b;
+		result.Z = a.Z * b;
+		result.W = a.W * b;
+		}
+
+	static void Multiply(const FakeQuaternion &a, const FakeVector3<T> &b, FakeVector3<T> &result)
+		{
+		FakeVector3<T>::Transform(b, a, result);
+		}
+
+	static FakeQuaternion Add(const FakeQuaternion &a, const FakeQuaternion &b)
+		{
+		FakeQuaternion result;
+		Add(a, b, result);
+		return result;
+		}
+
+	static FakeQuaternion Subtract(const FakeQuaternion &a, const FakeQuaternion &b)
+		{
+		FakeQuaternion result;
+		Subtract(a, b, result);
+		return result;
+		}
+
+	static FakeQuaternion Multiply(const FakeQuaternion &a, const FakeQuaternion &b)
+		{
+		FakeQuaternion result;
+		Multiply(a, b, result);
+		return result;
+		}
+
+	static FakeQuaternion Multiply(const FakeQuaternion &a, T b)
+		{
+		FakeQuaternion result;
+		Multiply(a, b, result);
+		return result;
+		}
+
+	bool operator==(const FakeQuaternion &other) const
+		{
+		return X == other.X && Y == other.Y && Z == other.Z && W == other.W;
+		}
+
+	bool operator!=(const FakeQuaternion &other) const
+		{
+		return !(*this == other);
+		}
+
+	bool operator<(const FakeQuaternion &other) const
+		{
+		return X < other.X &&Y < other.Y &&Z < other.Z &&W < other.W;
+		}
+
+	bool operator<=(const FakeQuaternion &other) const
+		{
+		return X <= other.X && Y <= other.Y && Z <= other.Z && W <= other.W;
+		}
+
+	bool operator>(const FakeQuaternion &other) const
+		{
+		return X > other.X && Y > other.Y && Z > other.Z && W > other.W;
+		}
+
+	bool operator>=(const FakeQuaternion &other) const
+		{
+		return X >= other.X && Y >= other.Y && Z >= other.Z && W >= other.W;
+		}
+
+	FakeQuaternion operator-() const
+		{
+		return FakeQuaternion(-X, -Y, -Z, -W);
+		}
+
 	FakeQuaternion operator+(const FakeQuaternion &other) const
 		{
 		FakeQuaternion result;
@@ -1233,13 +858,6 @@ struct FAKE_API FakeQuaternion
 		return result;
 		}
 
-	/**
-	 * 
-	 * Subtracts two quaternions.
-	 * 
-	 * @param other The quaternion to subtract.
-	 * @return Returns the difference of the two quaternions (other and current instance).
-	 */
 	FakeQuaternion operator-(const FakeQuaternion &other) const
 		{
 		FakeQuaternion result;
@@ -1247,13 +865,6 @@ struct FAKE_API FakeQuaternion
 		return result;
 		}
 
-	/**
-	 * 
-	 * Multiplies two quaternions..
-	 * 
-	 * @param other The quaternion to multiply.
-	 * @return Returns the multiplied quaternion.
-	 */
 	FakeQuaternion operator*(const FakeQuaternion &other) const
 		{
 		FakeQuaternion result;
@@ -1261,169 +872,69 @@ struct FAKE_API FakeQuaternion
 		return result;
 		}
 
-	/**
-	 * 
-	 * Scales a quaternion by the given value.
-	 * 
-	 * @param scale The amount by which to scale the quaternion.
-	 * @return Returns the scaled quaternion.
-	 */
-	FakeQuaternion operator*(T scale) const
+	FakeQuaternion operator*(T scalar) const
 		{
-		FakeQuaternion q = this;
-		q.Multiply(scale);
-		return q;
+		FakeQuaternion result;
+		Multiply(*this, scalar, result);
+		return result;
 		}
 
-	/**
-	 * 
-	 * Adds two quaternions.
-	 * 
-	 * @param other The quaternion to add.
-	 * @return Returns the sum of the two quaternions (other and the current instance).
-	 */
-	FakeQuaternion &operator+=(const FakeQuaternion &other)
-		{
-		X += other.X;
-		Y += other.Y;
-		Z += other.Z;
-		W += other.W;
-		return *this;
-		}
-
-	/**
-	 * 
-	 * Subtracts two quaternions.
-	 * 
-	 * @param other The quaternion to subtract.
-	 * @return Returns the difference of the two quaternions (other and the current instance).
-	 */
-	FakeQuaternion &operator-=(const FakeQuaternion &other)
-		{
-		X -= other.X;
-		Y -= other.Y;
-		Z -= other.Z;
-		W -= other.W;
-		return *this;
-		}
-
-	/**
-	 * 
-	 * Multiplies two quaternions.
-	 * 
-	 * @param other The quaternion to multiply.
-	 * @return Returns the multiplied quaternion.
-	 */
-	FakeQuaternion &operator*=(const FakeQuaternion &other)
-		{
-		Multiply(other);
-		return *this;
-		}
-
-	/**
-	 * 
-	 * Scales a quaternion by the given value.
-	 * 
-	 * @param scale The amount by which to scale the quaternion.
-	 * @return Returns the scaled quaternion.
-	 */
-	FakeQuaternion &operator*=(T scale)
-		{
-		Multiply(scale);
-		return *this;
-		}
-
-	/**
-	 * 
-	 * Transforms a vector by the given rotation.
-	 * 
-	 * @param vector The vector to transform.
-	 * @return Returns the scaled vector.
-	 */
 	FakeVector3<T> operator*(const FakeVector3<T> &vector) const
 		{
-		return FakeVector3<T>::Transform(vector, *this);
+		FakeVector3<T> result;
+		Multiply(*this, vector, result);
+		return result;
 		}
 
-	/**
-	 * 
-	 * Determines whether the specified quaternion is equal to this instance.
-	 * 
-	 * @param other The quaternion to compare with this instance.
-	 * @return Returns true if the specified quaternion is equal to this instance - otherwise false.
-	 */
-	bool operator==(const FakeQuaternion &other) const
+	FakeQuaternion &operator+=(const FakeQuaternion &other)
 		{
-		return Dot(*this, other) > static_cast<T>(0.99999999);
+		Add(*this, other, *this);
+		return *this;
 		}
 
-	/**
-	 *
-	 * Determines whether the specified quaternion is not equal to this instance.
-	 *
-	 * @param other The quaternion to compare with this instance.
-	 * @return Returns true if the specified quaternion is not equal to this instance - otherwise false.
-	 */
-	bool operator!=(const FakeQuaternion &other) const
+	FakeQuaternion &operator-=(const FakeQuaternion &other)
 		{
-		return !(*this == other);
+		Subtract(*this, other, *this);
+		return *this;
 		}
 
-	/**
-	 * 
-	 * Determines whether the specified quaternion is greater than this instance.
-	 * 
-	 * @param other The quaternion to compare with this instance.
-	 * @return Returns true if the specified quaternion is greater than this instance - otherwise false.
-	 */
-	bool operator<(const FakeQuaternion &other) const
+	FakeQuaternion &operator*=(const FakeQuaternion &other)
 		{
-		return X < other.X && Y < other.Y && Z < other.Z && W < other.W;
+		Multiply(*this, other, *this);
+		return *this;
 		}
 
-	/**
-	 * 
-	 * Determines whether the specified quaternion is greater or equal to this instance.
-	 * 
-	 * @param other The quaternion to compare with this instance.
-	 * @return Returns true if the specified quaternion is greater or equal to this instance - otherwise false.
-	 */
-	bool operator<=(const FakeQuaternion &other) const
+	FakeQuaternion &operator*=(T scalar)
 		{
-		return X <= other.X && Y <= other.Y && Z <= other.Z && W <= other.W;
+		Multiply(*this, scalar, *this);
+		return *this;
 		}
 
-	/**
-	 * 
-	 * Determines whether the specified quaternion is less than this instance.
-	 * 
-	 * @param other The quaternion to compare with this instance.
-	 * @return Returns true if the specified quaternion is less than this instance - otherwise false.
-	 */
-	bool operator>(const FakeQuaternion &other) const
+	FakeVector3<T> operator*=(const FakeVector3<T> &vector)
 		{
-		return X > other.X && Y > other.Y && Z > other.Z && W > other.W;
+		FakeVector3<T> result;
+		Multiply(*this, vector, result);
+		return result;
 		}
 
-	/**
-	 * 
-	 * Determines whether the specified quaternion is less or equal to this instance.
-	 * 
-	 * @param other The quaternion to compare with this instance.
-	 * @return Returns true if the specified quaternion is less or equal to this instance - otherwise false.
-	 */
-	bool operator>=(const FakeQuaternion &other) const
+	FakeQuaternion &operator++(int)
 		{
-		return X >= other.X && Y >= other.Y && Z >= other.Z && W >= other.W;
+		++X;
+		++Y;
+		++Z;
+		++W;
+		return *this;
 		}
 
-	/**
-	 * 
-	 * Copy operator.
-	 * 
-	 * @param other The instance which should be copied.
-	 * @return Returns the current instance.
-	 */
+	FakeQuaternion &operator--(int)
+		{
+		--X;
+		--Y;
+		--Z;
+		--W;
+		return *this;
+		}
+
 	FakeQuaternion &operator=(const FakeQuaternion &other)
 		{
 		X = other.X;
@@ -1433,75 +944,43 @@ struct FAKE_API FakeQuaternion
 		return *this;
 		}
 
-	/**
-	 * 
-	 * Overloaded dereferencing operator. Used to write the values of the quaternion into an array.
-	 * 
-	 * @return Returns the values of the quaternion in a stack based array.
-	 */
 	T *operator*()
 		{
-		static T arr[4];
-		arr[0] = X;
-		arr[1] = Y;
-		arr[2] = Z;
-		arr[3] = W;
-		return arr;
+		return Raw;
 		}
 
-	/**
-	 * 
-	 * Overloaded dereferencing operator. Used to write the values of the quaternion into an array.
-	 * 
-	 * @return Returns the values of the quaternion in a stack based array.
-	 */
-	T *operator*() const
+	const T *operator*() const
 		{
-		static T arr[4];
-		arr[0] = X;
-		arr[1] = Y;
-		arr[2] = Z;
-		arr[3] = W;
-		return arr;
+		return Raw;
 		}
 
-	/**
-	 * 
-	 * Overloaded array indexing operators. Used to access the values of the quaternion in a array-style way.
-	 * 
-	 * @param index The index of the value to access. The index is always between 0 (including) and 4 (excluding).
-	 * @return Returns the value of the quaternion at the specified index.
-	 */
-	T &operator[](size_t index)
+	T &operator[](uint32 index)
 		{
-		FAKE_ASSERT(index < 4);
-		return *((T*)this + index);
+		if (index > 0 && index < 4)
+			{
+			return Raw[index];
+			}
+
+		// Index out of bounds, return -1
+		static T falseVal = static_cast<T>(-1);
+		return falseVal;
 		}
 
-	/**
-	 * 
-	 * Overloaded array indexing operators. Used to access the values of the quaternion in a array-style way.
-	 * 
-	 * @param index The index of the value to access. The index is always between 0 (including) and 4 (excluding).
-	 * @return Returns the value of the quaternion at the specified index.
-	 */
-	const T &operator[](size_t index) const
+	const T &operator[](uint32 index) const
 		{
-		FAKE_ASSERT(index < 4);
-		return *((T*)this + index);
+		if (index > 0 && index < 4)
+			{
+			return Raw[index];
+			}
+
+		// Index out of bounds, return -1
+		static T falseVal = static_cast<T>(-1);
+		return falseVal;
 		}
 
-	/**
-	 * 
-	 * Overloaded << operator, to print the quaternion into any stream.
-	 * 
-	 * @param stream The stream the quaternion should be written to.
-	 * @param quaternion The quaternion which should be written.
-	 * @return Returns the output stream containing the specified quaternion.
-	 */
-	friend std::ostream &operator<<(std::ostream &stream, const FakeQuaternion &quaternion)
+	friend std::ostream &operator<<(std::ostream &stream, const FakeQuaternion &quat)
 		{
-		stream << "Quaternion(" << quaternion.X << ", " << quaternion.Y << ", " << quaternion.Z << ", " << quaternion.W << ")";
+		stream << quat.X << ", " << quat.Y << ", " << quat.Z << ", " << quat.W;
 		return stream;
 		}
 	};
