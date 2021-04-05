@@ -13,15 +13,42 @@ FakeTimer::~FakeTimer()
 		Stop();
 	}
 
-void FakeTimer::Stop()
+void FakeTimer::Start(const FakeString &name)
+	{
+	if (!Name.IsEmpty())
+		{
+		Name = name;
+		}
+
+	Stopped = false;
+	StartPoint = std::chrono::high_resolution_clock::now();
+	OutputString.Clear();
+	}
+
+void FakeTimer::Stop(bool shouldPrint)
 	{
 	auto endPoint = std::chrono::high_resolution_clock::now();
 
 	long long start = std::chrono::time_point_cast<std::chrono::milliseconds>(StartPoint).time_since_epoch().count();
 	long long end = std::chrono::time_point_cast<std::chrono::milliseconds>(endPoint).time_since_epoch().count();
 
-	FAKE_LOG_TRACE("%s Time: %llms", Name, (end - start));
+	OutputString << Name << " Time: " << (end - start) << "ms";
 	Stopped = true;
+
+	if (shouldPrint)
+		{
+		FAKE_LOG_TRACE("%s", *OutputString);
+		}
+	}
+
+const FakeString &FakeTimer::GetName() const
+	{
+	return Name;
+	}
+
+const FakeString &FakeTimer::GetOutputString() const
+	{
+	return OutputString;
 	}
 
 double FakeTimer::GetTime()

@@ -25,6 +25,11 @@
 #include <string>
 #include <sstream>
 
+/**
+ * 
+ * .
+ * 
+ */
 class FakeString
 	{
 	private:
@@ -49,6 +54,7 @@ class FakeString
 		FakeString &operator=(const FakeString &other);
 		FakeString &operator=(FakeString &&other) noexcept;
 
+		void Clear();
 		void Resize(int64 size);
 		uint32 Length() const;
 

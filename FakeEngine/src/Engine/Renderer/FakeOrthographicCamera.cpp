@@ -3,9 +3,7 @@
 
 void FakeOrthographicCamera::RecalculateViewMatrix()
 	{
-	FakeMat4f transform = FakeMat4f::Translate(Position) *
-		FakeMat4f::Rotate(fake_radians(Rotation), FakeVec3f(0, 0, 1));
-
+	FakeMat4f transform = FakeMat4f::Translate(Position) * FakeMat4f::Rotate(fake_radians(Rotation), { 0, 0, 1 });
 	ViewMatrix = FakeMat4f::Inverse(transform);
 	ViewProjectionMatrix = ProjectionMatrix * ViewMatrix;
 	}

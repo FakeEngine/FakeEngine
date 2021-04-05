@@ -67,6 +67,7 @@ class FAKE_API FakeTimer
 	{
 	private:
 		FakeString Name;
+		FakeString OutputString;
 		bool Stopped;
 		std::chrono::time_point<std::chrono::steady_clock> StartPoint;
 
@@ -88,11 +89,35 @@ class FAKE_API FakeTimer
 		~FakeTimer();
 
 		/**
+		 * 
+		 * Restarts the timer after it has been stopped.
+		 * 
+		 * @param name The name of the measurement.
+		 */
+		void Start(const FakeString &name = "");
+
+		/**
 		 *
 		 * Stops the timer and outputs the result into the console.
 		 *
 		 */
-		void Stop();
+		void Stop(bool shouldPrint = false);
+
+		/**
+		 *
+		 * Returns the name of the measurement.
+		 * 
+		 * @return Returns the name of the measurement.
+		 */
+		const FakeString &GetName() const;
+
+		/**
+		 * 
+		 * Returns the measurement result in a String.
+		 * 
+		 * @return Returns the measurement result in a String.
+		 */
+		const FakeString &GetOutputString() const;
 
 		/**
 		 *
