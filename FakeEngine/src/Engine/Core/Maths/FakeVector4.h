@@ -60,43 +60,53 @@ struct FakeVector4
 
 	FakeVector4()
 		: X(0), Y(0), Z(0), W(0)
-		{		}
+		{
+		}
 
 	FakeVector4(T xyzw)
 		: X(xyzw), Y(xyzw), Z(xyzw), W(xyzw)
-		{		}
+		{
+		}
 
 	FakeVector4(T x, T y, T z, T w)
 		: X(x), Y(y), Z(z), W(w)
-		{		}
+		{
+		}
 
 	FakeVector4(const T *xyzw)
 		: X(xyzw[0]), Y(xyzw[1]), Z(xyzw[2]), W(xyzw[3])
-		{		}
+		{
+		}
 
 	FakeVector4(const FakeVector2<T> &xy)
 		: X(xy.X), Y(xy.Y), Z(0), W(0)
-		{		}
+		{
+		}
 
 	FakeVector4(const FakeVector3<T> &xyz)
 		: X(xyz.X), Y(xyz.Y), Z(xyz.Z), W(0)
-		{		}
+		{
+		}
 
 	FakeVector4(const FakeVector4 &other)
 		: X(other.X), Y(other.Y), Z(other.Z), W(other.W)
-		{		}
+		{
+		}
 
 	FakeVector4(const FakeVector2<T> &xy, const FakeVector2<T> &zw)
 		: X(xy.X), Y(xy.Y), Z(zw.X), W(zw.Y)
-		{		}
+		{
+		}
 
 	FakeVector4(const FakeVector2<T> &xy, T z, T w)
 		: X(xy.X), Y(xy.Y), Z(z), W(w)
-		{		}
+		{
+		}
 
 	FakeVector4(const FakeVector3<T> &xyz, T w)
 		: X(xyz.X), Y(xyz.Y), Z(xyz.Z), W(w)
-		{		}
+		{
+		}
 
 	FakeString ToString() const
 		{

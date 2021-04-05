@@ -55,7 +55,7 @@ class ExampleLayer : public FakeLayer
 			{
 			CameraController.OnRender(ts);
 
-			FakeRenderer2D::BeginScene(CameraController.GetCamera().GetViewProjectionMatrix());
+			FakeRenderer2D::BeginScene({ 1280.0f, 720.0f });
 			FakeRenderer2D::DrawQuad({ 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f }, { 0.8f, 0.2f, 0.3f, 1.0f });
 		//	FakeRenderer2D::DrawTexture({ 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f }, LogoTex);
 			FakeRenderer2D::EndScene();

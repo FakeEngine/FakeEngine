@@ -25,27 +25,11 @@
 #include "Engine/Core/Maths/FakeMaths.h"
 #include "Engine/Renderer/FakeTexture2D.h"
 
-/**
- * 
- * .
- * 
- */
 class FakeRenderer2D
 	{
 	private:
 
-		/**
-		 * 
-		 * .
-		 * 
-		 */
 		static void FlushAndReset();
-
-		/**
-		 * 
-		 * .
-		 * 
-		 */
 		static void FlushAndResetLines();
 
 	public:
@@ -67,54 +51,15 @@ class FakeRenderer2D
 				}
 			};
 
-		/**
-		 * 
-		 * .
-		 * 
-		 */
 		static void Init();
-
-		/**
-		 * 
-		 * .
-		 * 
-		 */
 		static void Shutdown();
 
-		/**
-		 * 
-		 * .
-		 * 
-		 */
+		static void BeginScene(const FakeVec2f &viewport, bool depthTest = true);
 		static void BeginScene(const FakeMat4f &viewProjection, bool depthTest = true);
-
-		/**
-		 * 
-		 * .
-		 * 
-		 */
 		static void EndScene();
 
-		/**
-		 * 
-		 * .
-		 * 
-		 */
 		static void Flush();
-		
-		/**
-		 * 
-		 * .
-		 * 
-		 */
 		static void ResetStats();
-
-		/**
-		 * 
-		 * .
-		 * 
-		 * @return 
-		 */
 		static Statistics GetStats();
 
 		static void DrawQuad(const FakeMat4f &transform, const FakeVec4f &color);
@@ -124,6 +69,4 @@ class FakeRenderer2D
 		static void DrawTexture(const FakeMat4f &transform, const FakeRef<FakeTexture2D> &texture, float tilingFactor = 1.0f, const FakeVec4f &tintColor = FakeVec4f(1.0f, 1.0f, 1.0f, 1.0f));
 		static void DrawTexture(const FakeVec2f &position, const FakeVec2f &size, const FakeRef<FakeTexture2D> &texture, float tilingFactor = 1.0f, const FakeVec4f &tintColor = FakeVec4f(1.0f, 1.0f, 1.0f, 1.0f));
 		static void DrawTexture(const FakeVec3f &position, const FakeVec2f &size, const FakeRef<FakeTexture2D> &texture, float tilingFactor = 1.0f, const FakeVec4f &tintColor = FakeVec4f(1.0f, 1.0f, 1.0f, 1.0f));
-
-
 	};

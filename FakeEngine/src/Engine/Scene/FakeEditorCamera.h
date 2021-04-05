@@ -64,8 +64,7 @@ class FAKE_API FakeEditorCamera
 
 	public:
 
-		FakeEditorCamera() = default;
-
+		FakeEditorCamera();
 		FakeEditorCamera(const FakeMat4f &projectionMatrix);
 
 		void Focus();

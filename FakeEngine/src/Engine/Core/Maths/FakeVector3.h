@@ -68,35 +68,43 @@ struct FakeVector3
 
 	FakeVector3()
 		: X(0), Y(0), Z(0)
-		{		}
+		{
+		}
 
 	FakeVector3(T xyz)
 		: X(xyz), Y(xyz), Z(xyz)
-		{		}
+		{
+		}
 
 	FakeVector3(T x, T y, T z)
 		: X(x), Y(y), Z(z)
-		{		}
+		{
+		}
 
 	FakeVector3(const T *xyz)
 		: X(xyz[0]), Y(xyz[1]), Z(xyz[2])
-		{		}
+		{
+		}
 
 	FakeVector3(const FakeVector2<T> &xy, T z)
 		: X(xy.X), Y(xy.Y), Z(z)
-		{		}
+		{
+		}
 
 	FakeVector3(const FakeVector2<T> &xy)
 		: X(xy.X), Y(xy.Y), Z(0)
-		{		}
+		{
+		}
 
 	FakeVector3(const FakeVector3 &other)
 		: X(other.X), Y(other.Y), Z(other.Z)
-		{		}
+		{
+		}
 
 	FakeVector3(const FakeVector4<T> &xyzw)
 		: X(xyzw.X), Y(xyzw.Y), Z(xyzw.Z)
-		{		}
+		{
+		}
 
 	FakeString ToString() const
 		{

@@ -53,27 +53,33 @@ struct FakeVector2
 
 	FakeVector2()
 		: X(0), Y(0)
-		{		}
+		{
+		}
 
 	FakeVector2(T xy)
 		: X(xy), Y(xy)
-		{		}
+		{
+		}
 
 	FakeVector2(T x, T y)
 		: X(x), Y(y)
-		{		}
+		{
+		}
 
 	FakeVector2(const FakeVector2 &other)
 		: X(other.X), Y(other.Y)
-		{		}
+		{
+		}
 
 	FakeVector2(const FakeVector3<T> &other)
 		: X(other.X), Y(other.Y)
-		{		}
+		{
+		}
 
 	FakeVector2(const FakeVector4<T> &other)
 		: X(other.X), Y(other.Y)
-		{		}
+		{
+		}
 
 	FakeString ToString() const
 		{

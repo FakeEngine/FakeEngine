@@ -178,6 +178,21 @@ void FakeRenderer2D::Shutdown()
 	delete Data;
     }
 
+void FakeRenderer2D::BeginScene(const FakeVec2f &viewport, bool depthTest)
+	{
+	FakeMat4f view, projection, viewProjection;
+	const float halfWidth = viewport.X * 0.5f;
+	const float halfHeight = viewport.Y * 0.5f;
+	const float zNear = -1.0f;
+	const float zFar = 1.0f;
+
+	FakeMat4f::OrthoOffCenter(-halfWidth, halfWidth, halfHeight, -halfHeight, zNear, zFar, projection);
+	FakeMat4f::Translate(-halfWidth, -halfHeight, 0, view);
+	FakeMat4f::Multiply(view, projection, viewProjection);
+
+	BeginScene(viewProjection, depthTest);
+	}
+
 void FakeRenderer2D::BeginScene(const FakeMat4f &viewProjection, bool depthTest)
 	{
 	Data->CameraViewProjection = viewProjection;

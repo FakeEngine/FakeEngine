@@ -27,24 +27,24 @@ void FakeOrthographicCameraController::OnRender(FakeTimeStep ts)
 	{
 	if (FakeInput::IsKeyPressed(FAKE_KEY_A))
 		{
-		CameraPosition.X -= cos(fake_radians(CameraRotation)) * CameraTranslationSpeed * ts;
-		CameraPosition.Y -= sin(fake_radians(CameraRotation)) * CameraTranslationSpeed * ts;
+		CameraPosition.X -= fake_cos(fake_radians(CameraRotation)) * CameraTranslationSpeed * ts;
+		CameraPosition.Y -= fake_sin(fake_radians(CameraRotation)) * CameraTranslationSpeed * ts;
 		}
 	else if (FakeInput::IsKeyPressed(FAKE_KEY_D))
 		{
-		CameraPosition.X += cos(fake_radians(CameraRotation)) * CameraTranslationSpeed * ts;
-		CameraPosition.Y += sin(fake_radians(CameraRotation)) * CameraTranslationSpeed * ts;
+		CameraPosition.X += fake_cos(fake_radians(CameraRotation)) * CameraTranslationSpeed * ts;
+		CameraPosition.Y += fake_sin(fake_radians(CameraRotation)) * CameraTranslationSpeed * ts;
 		}
 
 	if (FakeInput::IsKeyPressed(FAKE_KEY_W))
 		{
-		CameraPosition.X += -sin(fake_radians(CameraRotation)) * CameraTranslationSpeed * ts;
-		CameraPosition.Y += cos(fake_radians(CameraRotation)) * CameraTranslationSpeed * ts;
+		CameraPosition.X += -fake_sin(fake_radians(CameraRotation)) * CameraTranslationSpeed * ts;
+		CameraPosition.Y += fake_cos(fake_radians(CameraRotation)) * CameraTranslationSpeed * ts;
 		}
 	else if (FakeInput::IsKeyPressed(FAKE_KEY_S))
 		{
-		CameraPosition.X -= -sin(fake_radians(CameraRotation)) * CameraTranslationSpeed * ts;
-		CameraPosition.Y -= cos(fake_radians(CameraRotation)) * CameraTranslationSpeed * ts;
+		CameraPosition.X -= -fake_sin(fake_radians(CameraRotation)) * CameraTranslationSpeed * ts;
+		CameraPosition.Y -= fake_cos(fake_radians(CameraRotation)) * CameraTranslationSpeed * ts;
 		}
 
 
@@ -52,7 +52,7 @@ void FakeOrthographicCameraController::OnRender(FakeTimeStep ts)
 		{
 		if (FakeInput::IsKeyPressed(FAKE_KEY_Q))
 			CameraRotation += CameraRotationSpeed * ts;
-		if (FakeInput::IsKeyPressed(FAKE_KEY_E))
+		else if (FakeInput::IsKeyPressed(FAKE_KEY_E))
 			CameraRotation -= CameraRotationSpeed * ts;
 
 		if (CameraRotation > 180.0f)

@@ -3,6 +3,21 @@
 
 #include "Engine/Core/Window/FakeInput.h"
 
+FakeEditorCamera::FakeEditorCamera()
+	{
+	ProjectionMatrix = FakeMat4f::PerspectiveFOV(90.0f, 1280.0f / 720.0f, 1.0f, 10000.0f);
+	Rotation = FakeVec3f(90.0f, 0.0f, 0.0f);
+	FocalPoint = FakeVec3f(0.0f);
+
+	FakeVec3f position = { -5, 5, 5 };
+	Distance = FakeVec3f::Distance(position, FocalPoint);
+
+	Yaw = 3.0f * FAKE_PI / 4.0f;
+	Pitch = FAKE_PI / 4.0f;
+
+	UpdateCameraView();
+	}
+
 FakeEditorCamera::FakeEditorCamera(const FakeMat4f &projectionMatrix)
 	: ProjectionMatrix(projectionMatrix)
 	{

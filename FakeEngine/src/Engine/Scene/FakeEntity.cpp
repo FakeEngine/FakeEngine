@@ -1,10 +1,7 @@
 #include "FakePch.h"
 #include "FakeEntity.h"
 
-FakeEntity::FakeEntity()
-    {
-    }
-
-FakeEntity::~FakeEntity()
+FakeEntity::FakeEntity(entt::entity handle, FakeScene *scene)
+    : EntityHandle(handle), Scene(scene)
     {
     }

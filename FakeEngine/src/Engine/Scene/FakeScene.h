@@ -22,7 +22,11 @@
 
 #pragma once
 
-#include "FakeEntity.h"
+#include <entt/entt.hpp>
+#include "Engine/Core/FakeTimeStep.h"
+#include "FakeCamera.h"
+
+class FakeEntity;
 
 /**
  * 
@@ -32,24 +36,29 @@
 class FAKE_API FakeScene
 	{
 	private:
+		entt::registry Registry;
+		uint32 ViewportWidth = 0;
+		uint32 ViewportHeight = 0;
 
+		friend class FakeEntity;
 
+		template<typename T>
+		void OnComponentAdded(FakeEntity entity, T &component);
 
 	public:
 
-		/**
-		 * 
-		 * .
-		 * 
-		 */
 		FakeScene();
-
-		/**
-		 * 
-		 * .
-		 * 
-		 */
+		FakeScene(uint32 width, uint32 height);
 		~FakeScene();
 
+		FakeEntity CreateEntity(const FakeString &name = "");
+		void DestroyEntity(FakeEntity entity);
 
+		void OnRenderRuntime(FakeTimeStep ts);
+		void OnRenderEditor(FakeTimeStep ts);
+		void OnRenderEditor(FakeTimeStep ts, FakeCamera &camera);
+		void OnViewportResize(uint32 width, uint32 height);
+
+		FakeEntity GetPrimaryCameraEntity();
+		FakeCamera &GetPrimaryCamera();
 	};

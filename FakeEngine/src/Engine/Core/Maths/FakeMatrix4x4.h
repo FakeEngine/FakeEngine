@@ -1002,6 +1002,11 @@ struct FakeMatrix4x4
 		result.M43 = translation.Z;
 		}
 
+	static void Translate(T x, T y, T z, FakeMatrix4x4 &result)
+		{
+		Translate(FakeVector3<T>(x, y, z), result);
+		}
+
 	static FakeMatrix4x4 Translate(const FakeVector3<T> &translation)
 		{
 		FakeMatrix4x4 result;
